@@ -1,0 +1,783 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light}body{margin:0;font:14px system-ui}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Quiet Zone QR</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Schibsted+Grotesk:wght@400;500;700&family=Martian+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a print-shop bench. Controls run down the left; the code sits on a green cutting mat that stays in view on the right. */
+:root {
+  --bg: #f0f4f1; --surface: #ffffff; --fg: #14221c; --muted: #52635b; --line: #ccd7d1; --strong-line: #14221c;
+  --mat: #17594a; --mat-line: rgba(255,255,255,.1); --mat-line-major: rgba(255,255,255,.2); --mat-ink: #e6f4ee; --mat-muted: #a9cfc2;
+  --accent: #f4bb1f; --accent-ink: #231a00; --accent-hover: #ffcd42;
+  --ok-bg: #d9f5e3; --ok-fg: #0d5a30; --warn-bg: #fff0c7; --warn-fg: #6d4b00; --bad-bg: #ffdfda; --bad-fg: #8f1d10; --idle-bg: #dfe8e3; --idle-fg: #2f3f38;
+  --check-a: #ffffff; --check-b: #d9dfdc; --shadow: rgba(4,28,22,.4);
+  --display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", sans-serif;
+  --body: "Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --mono: "Martian Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0e1613; --surface: #17211d; --fg: #e5efea; --muted: #99aca3; --line: #2d3b35; --strong-line: #e5efea;
+  --mat: #0f3f34; --mat-line: rgba(255,255,255,.07); --mat-line-major: rgba(255,255,255,.15); --mat-ink: #e6f4ee; --mat-muted: #9bc5b7;
+  --accent: #f4bb1f; --accent-ink: #231a00; --accent-hover: #ffcd42;
+  --ok-bg: #123f28; --ok-fg: #a9f0c5; --warn-bg: #443305; --warn-fg: #ffdf8d; --bad-bg: #4d1a14; --bad-fg: #ffc2b9; --idle-bg: #26332e; --idle-fg: #cbdad3;
+  --check-a: #ffffff; --check-b: #d9dfdc; --shadow: rgba(0,0,0,.55); color-scheme: dark;
+} }
+:root[data-theme="dark"] {
+  --bg: #0e1613; --surface: #17211d; --fg: #e5efea; --muted: #99aca3; --line: #2d3b35; --strong-line: #e5efea;
+  --mat: #0f3f34; --mat-line: rgba(255,255,255,.07); --mat-line-major: rgba(255,255,255,.15); --mat-ink: #e6f4ee; --mat-muted: #9bc5b7;
+  --accent: #f4bb1f; --accent-ink: #231a00; --accent-hover: #ffcd42;
+  --ok-bg: #123f28; --ok-fg: #a9f0c5; --warn-bg: #443305; --warn-fg: #ffdf8d; --bad-bg: #4d1a14; --bad-fg: #ffc2b9; --idle-bg: #26332e; --idle-fg: #cbdad3;
+  --check-a: #ffffff; --check-b: #d9dfdc; --shadow: rgba(0,0,0,.55); color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font: 400 15px/1.5 var(--body); }
+.wrap { max-width: 1160px; margin: 0 auto; padding-block: 28px 56px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 20px; margin-bottom: 24px; }
+h1 { margin: 0; font: 800 clamp(32px, 5vw, 46px)/1 var(--display); letter-spacing: -.025em; text-wrap: balance; }
+.lede { margin: 0; flex: 1 1 340px; max-width: 62ch; color: var(--muted); }
+.bench { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 450px); gap: 40px; align-items: start; }
+.controls { display: grid; gap: 0; min-width: 0; }
+.group { display: grid; gap: 14px; padding-block: 22px; border-top: 1px solid var(--line); min-width: 0; }
+.group:first-child { border-top: 0; padding-top: 0; }
+h2 { margin: 0; font: 600 21px/1.2 var(--display); letter-spacing: -.01em; }
+.sub { margin: -8px 0 0; color: var(--muted); font-size: 14px; }
+fieldset { border: 0; margin: 0; padding: 0; min-width: 0; display: grid; gap: 8px; }
+legend, .lab { padding: 0; font-weight: 500; font-size: 14px; }
+legend { margin-bottom: 8px; }
+.field { display: grid; gap: 5px; min-width: 0; }
+.field small, .hint { color: var(--muted); font-size: 13px; }
+.fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+.fields .wide { grid-column: 1 / -1; }
+input[type=text], input[type=url], input[type=email], input[type=tel], input[type=password], input[type=number], input[type=datetime-local], textarea, select {
+  width: 100%; min-width: 0; padding: 9px 11px; font: 400 15px/1.35 var(--body); color: var(--fg); background: var(--surface); border: 1px solid var(--line); border-radius: 6px;
+}
+textarea { resize: vertical; min-height: 84px; }
+input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
+.opt input:focus-visible + span { outline: 2px solid var(--fg); outline-offset: 2px; }
+.opts { display: grid; gap: 8px; }
+.opts.six { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.opts.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.opts.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.opts.tabs { display: flex; flex-wrap: wrap; gap: 6px; }
+.opt { position: relative; display: block; cursor: pointer; min-width: 0; }
+.opt input { position: absolute; opacity: 0; inset: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+.opt > span { display: grid; justify-items: center; gap: 5px; padding: 9px 3px 7px; height: 100%; text-align: center; font-size: 12.5px; line-height: 1.2; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; }
+.opt svg { width: 100%; max-width: 40px; height: auto; display: block; }
+.opt:hover > span { border-color: var(--muted); }
+.opt input:checked + span { border-color: var(--strong-line); box-shadow: inset 0 0 0 1px var(--strong-line); font-weight: 700; }
+.tabs .opt > span { padding: 7px 13px; font-size: 14px; }
+.tabs .opt input:checked + span { background: var(--fg); color: var(--bg); }
+.presets { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+.preset { padding: 7px 7px 6px; display: grid; gap: 5px; justify-items: center; font: 500 12.5px/1.2 var(--body); color: var(--fg); background: var(--surface); border: 1px solid var(--line); border-radius: 6px; cursor: pointer; }
+.preset:hover { border-color: var(--muted); }
+.preset svg { display: block; width: 100%; height: auto; border-radius: 3px; }
+.colors { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+.color { display: grid; grid-template-columns: 42px minmax(0, 1fr); gap: 7px; }
+input[type=color] { width: 42px; height: 40px; padding: 2px; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; cursor: pointer; }
+.color input[type=text] { font: 400 13px/1.3 var(--mono); }
+.check { display: flex; gap: 8px; align-items: center; cursor: pointer; font-size: 14px; }
+.check input { width: 17px; height: 17px; margin: 0; accent-color: var(--fg); }
+input[type=range] { width: 100%; margin: 0; accent-color: var(--fg); }
+.rangehead { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; font-weight: 500; }
+.rangehead output { font: 400 12.5px/1.6 var(--mono); color: var(--muted); }
+.drop { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 11px 13px; border: 1px dashed var(--muted); border-radius: 6px; font-size: 14px; }
+.drop.over { background: var(--idle-bg); border-style: solid; }
+.btn { padding: 10px 14px; font: 700 14px/1.2 var(--body); color: var(--fg); background: var(--surface); border: 1px solid var(--strong-line); border-radius: 6px; cursor: pointer; }
+.btn:hover:not(:disabled) { background: var(--idle-bg); }
+.btn:disabled, .btn.primary:disabled { opacity: .45; cursor: not-allowed; }
+.btn.primary { color: var(--accent-ink); background: var(--accent); border-color: var(--accent); font-size: 15px; }
+.btn.primary:hover:not(:disabled) { background: var(--accent-hover); }
+.btn.small { padding: 6px 10px; font-size: 13px; font-weight: 500; }
+details { font-size: 14px; }
+summary { cursor: pointer; font-weight: 500; }
+.encoded { margin: 8px 0 0; padding: 10px 12px; max-height: 160px; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; font: 400 12.5px/1.6 var(--mono); background: var(--surface); border: 1px solid var(--line); border-radius: 6px; }
+.stage { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 14px); display: grid; gap: 14px; min-width: 0; }
+.mat {
+  --c: 20px; padding: 34px 34px 18px; display: grid; gap: 18px; justify-items: center; color: var(--mat-ink); border-radius: 10px;
+  background-color: var(--mat);
+  background-image: linear-gradient(var(--mat-line-major) 1px, transparent 1px), linear-gradient(90deg, var(--mat-line-major) 1px, transparent 1px), linear-gradient(var(--mat-line) 1px, transparent 1px), linear-gradient(90deg, var(--mat-line) 1px, transparent 1px);
+  background-size: calc(var(--c) * 5) calc(var(--c) * 5), calc(var(--c) * 5) calc(var(--c) * 5), var(--c) var(--c), var(--c) var(--c);
+  background-position: -1px -1px;
+}
+.sticker { position: relative; width: 100%; max-width: 340px; min-width: 0; }
+.sticker .art { display: block; filter: drop-shadow(0 8px 14px var(--shadow)); }
+.sticker .art.see-through { background: repeating-conic-gradient(var(--check-a) 0 25%, var(--check-b) 0 50%) 0 0 / 18px 18px; }
+.sticker svg { display: block; width: 100%; height: auto; }
+.crop { position: absolute; width: 13px; height: 13px; border: 0 solid var(--mat-ink); pointer-events: none; }
+.crop.a { top: -11px; left: -11px; border-width: 1px 0 0 1px; }
+.crop.b { top: -11px; right: -11px; border-width: 1px 1px 0 0; }
+.crop.c { bottom: -11px; left: -11px; border-width: 0 0 1px 1px; }
+.crop.d { bottom: -11px; right: -11px; border-width: 0 1px 1px 0; }
+.empty { display: grid; place-items: center; aspect-ratio: 1; padding: 24px; text-align: center; color: var(--mat-ink); border: 1px dashed var(--mat-muted); border-radius: 6px; }
+.pill { display: inline-flex; align-items: center; gap: 7px; padding: 5px 12px; font-weight: 700; font-size: 13.5px; border-radius: 999px; background: var(--idle-bg); color: var(--idle-fg); }
+.pill[data-s=ok] { background: var(--ok-bg); color: var(--ok-fg); }
+.pill[data-s=warn] { background: var(--warn-bg); color: var(--warn-fg); }
+.pill[data-s=bad] { background: var(--bad-bg); color: var(--bad-fg); }
+.readout { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; width: 100%; margin: 0; }
+.readout div { min-width: 0; }
+.readout dt { font: 400 9.5px/1.4 var(--mono); letter-spacing: .05em; text-transform: uppercase; color: var(--mat-muted); }
+.readout dd { margin: 0; font: 600 12.5px/1.5 var(--mono); font-variant-numeric: tabular-nums; color: var(--mat-ink); }
+.notes { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; font-size: 13.5px; }
+.notes li { padding: 8px 11px; border-radius: 6px; background: var(--warn-bg); color: var(--warn-fg); }
+.notes li.bad { background: var(--bad-bg); color: var(--bad-fg); }
+.savebar { display: grid; gap: 10px; }
+.saverow { display: grid; grid-template-columns: minmax(0, 1fr) 120px; gap: 10px; }
+.btnrow { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1.15fr) minmax(0, .85fr); gap: 8px; }
+.btnrow .btn { padding-inline: 8px; }
+#status { min-height: 1.5em; margin: 0; font-size: 13.5px; color: var(--muted); }
+#copyFallback { width: 100%; height: 100px; font: 400 11px/1.4 var(--mono); }
+.tip { margin: 0; font-size: 13px; color: var(--muted); }
+@media (max-width: 900px) {
+  .bench { grid-template-columns: minmax(0, 1fr); gap: 26px; }
+  .stage { position: static; order: -1; }
+  .mat { padding: 28px 24px 16px; }
+}
+@media (max-width: 480px) {
+  .opts.six { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .presets { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .readout { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .btnrow { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .btnrow .primary { grid-column: 1 / -1; }
+}
+@media (prefers-reduced-motion: no-preference) { .opt > span, .btn, .preset { transition: background-color .12s, border-color .12s; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Quiet Zone</h1>
+    <p class="lede">Free QR codes, styled your way. No sign-up, no watermark and no expiry date. Your details stay in this browser, and each code holds your content directly, so it keeps working without this site.</p>
+  </header>
+
+  <main class="bench">
+    <form class="controls" id="form" autocomplete="off">
+      <section class="group">
+        <h2>What it opens</h2>
+        <div class="opts tabs" id="types" role="radiogroup" aria-label="Type of content"></div>
+        <div id="typeFields"></div>
+        <details>
+          <summary>See the exact text inside the code</summary>
+          <pre class="encoded" id="encoded"></pre>
+        </details>
+      </section>
+
+      <section class="group">
+        <h2>Starting styles</h2>
+        <p class="sub">Pick one, then change anything below.</p>
+        <div class="presets" id="presets"></div>
+      </section>
+
+      <section class="group">
+        <h2>Shape</h2>
+        <fieldset><legend>Modules (the small squares)</legend><div class="opts six" id="moduleOpts"></div></fieldset>
+        <fieldset><legend>Eye frame (the three corner squares)</legend><div class="opts four" id="frameOpts"></div></fieldset>
+        <fieldset><legend>Eye centre</legend><div class="opts four" id="ballOpts"></div></fieldset>
+      </section>
+
+      <section class="group">
+        <h2>Colour</h2>
+        <div class="colors">
+          <div class="field"><label class="lab" for="fgHex">Code</label><div class="color"><input type="color" id="fgPick" aria-label="Pick code colour"><input type="text" id="fgHex" spellcheck="false" maxlength="7"></div></div>
+          <div class="field"><label class="lab" for="bgHex">Background</label><div class="color"><input type="color" id="bgPick" aria-label="Pick background colour"><input type="text" id="bgHex" spellcheck="false" maxlength="7"></div></div>
+        </div>
+        <div class="fields">
+          <div class="field"><label class="lab" for="gradient">Gradient</label>
+            <select id="gradient" data-k="gradient"><option value="none">None</option><option value="vertical">Top to bottom</option><option value="horizontal">Left to right</option><option value="diagonal">Diagonal</option><option value="radial">From the centre</option></select></div>
+          <div class="field" id="fg2Wrap"><label class="lab" for="fg2Hex">Gradient end</label><div class="color"><input type="color" id="fg2Pick" aria-label="Pick gradient end colour"><input type="text" id="fg2Hex" spellcheck="false" maxlength="7"></div></div>
+        </div>
+        <label class="check"><input type="checkbox" id="eyeCustom" data-k="eyeCustom"> Give the eyes their own colour</label>
+        <div class="field" id="eyeWrap"><label class="lab" for="eyeHex">Eye colour</label><div class="color" style="max-width:220px"><input type="color" id="eyePick" aria-label="Pick eye colour"><input type="text" id="eyeHex" spellcheck="false" maxlength="7"></div></div>
+        <label class="check"><input type="checkbox" id="transparent" data-k="transparent"> Transparent background</label>
+        <div class="field"><div class="rangehead"><label for="radius">Rounded corners</label><output id="radiusOut"></output></div><input type="range" id="radius" data-k="radius" min="0" max="12" step="1"></div>
+      </section>
+
+      <section class="group">
+        <h2>Logo</h2>
+        <p class="sub">Adding a logo switches error correction to H, the level that recovers the most damage.</p>
+        <div class="opts six" id="logoOpts"></div>
+        <div class="drop" id="drop">
+          <input type="file" id="logoFile" accept="image/png,image/jpeg,image/webp,image/svg+xml" hidden>
+          <button type="button" class="btn small" id="logoBtn">Upload your logo</button>
+          <span id="logoName" class="hint">PNG, JPG, WebP or SVG. You can also drop a file here.</span>
+        </div>
+        <div class="field" id="logoSizeWrap"><div class="rangehead"><label for="logoSize">Logo size</label><output id="logoSizeOut"></output></div><input type="range" id="logoSize" data-k="logoSize" min="10" max="32" step="1"></div>
+      </section>
+
+      <section class="group">
+        <h2>Label</h2>
+        <div class="opts three" id="labelOpts"></div>
+        <div class="field" id="captionWrap"><label class="lab" for="caption">Label text</label><input type="text" id="caption" data-k="caption" maxlength="32"></div>
+      </section>
+
+      <section class="group">
+        <h2>Fine tuning</h2>
+        <fieldset><legend>Error correction</legend><div class="opts four" id="ecOpts"></div></fieldset>
+        <div class="field"><div class="rangehead"><label for="quiet">Quiet zone (blank border)</label><output id="quietOut"></output></div><input type="range" id="quiet" data-k="quiet" min="0" max="8" step="1"><small>The QR standard asks for 4 modules so scanners can find the code's edge.</small></div>
+        <div><button type="button" class="btn small" id="reset">Reset all styling</button></div>
+      </section>
+    </form>
+
+    <aside class="stage" aria-label="Your QR code">
+      <div class="mat">
+        <div class="sticker">
+          <span class="crop a"></span><span class="crop b"></span><span class="crop c"></span><span class="crop d"></span>
+          <div class="art" id="art" role="img" aria-label="QR code preview"></div>
+        </div>
+        <span class="pill" id="pill" data-s="idle" role="status"><span id="pillIcon" aria-hidden="true">…</span><span id="pillText">Checking</span></span>
+        <dl class="readout">
+          <div><dt>Version</dt><dd id="rVersion">–</dd></div>
+          <div><dt>Modules</dt><dd id="rModules">–</dd></div>
+          <div><dt>Repairs</dt><dd id="rEc">–</dd></div>
+          <div><dt>Min print</dt><dd id="rPrint">–</dd></div>
+        </dl>
+      </div>
+      <ul class="notes" id="notes"></ul>
+      <div class="savebar">
+        <div class="saverow">
+          <div class="field"><label class="lab" for="filename">File name</label><input type="text" id="filename" data-k="filename" maxlength="80"></div>
+          <div class="field"><label class="lab" for="pngSize">PNG width</label><select id="pngSize" data-k="pngSize"><option value="512">512 px</option><option value="1024">1024 px</option><option value="2048">2048 px</option><option value="4096">4096 px</option></select></div>
+        </div>
+        <div class="btnrow">
+          <button type="button" class="btn primary" id="savePng">Download PNG</button>
+          <button type="button" class="btn" id="saveSvg">Download SVG</button>
+          <button type="button" class="btn" id="copySvg">Copy SVG</button>
+        </div>
+        <p id="status" aria-live="polite"></p>
+        <textarea id="copyFallback" aria-label="SVG code to copy" readonly hidden></textarea>
+        <p class="tip">SVG stays sharp at any size, so use it for print. The scan test uses a software reader, so try the final code on a real phone before you print a large run.</p>
+      </div>
+    </aside>
+  </main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const EC_REPAIR = { L: 7, M: 15, Q: 25, H: 30 };
+const STYLE_DEFAULTS = {
+  module: "connected", eyeFrame: "rounded", eyeBall: "rounded", fg: "#10394f", fg2: "#0f7a6c", gradient: "diagonal",
+  eyeCustom: false, eyeColor: "#10394f", bg: "#ffffff", transparent: false, radius: 3,
+  logoKind: "none", logoSize: 22, frame: "banner", caption: "SCAN ME", ec: "Q", quiet: 4
+};
+const state = Object.assign({ type: "link", pngSize: "1024", filename: "qr-code", logoData: null, logoRatio: 1 }, STYLE_DEFAULTS);
+const STYLE_KEY = "quiet-zone-style";
+
+const TYPES = {
+  link: { label: "Link", fields: [{ id: "url", label: "Web address", type: "url", wide: true, value: "https://example.com/menu", ph: "https://yourwebsite.com", hint: "This is an example link. Replace it with your own." }] },
+  text: { label: "Text", fields: [{ id: "text", label: "Your text", area: true, wide: true, ph: "Anything you want people to read" }] },
+  wifi: { label: "Wi-Fi", fields: [
+    { id: "ssid", label: "Network name", ph: "Cafe Guest" }, { id: "pass", label: "Password", type: "password", ph: "Leave empty for open networks" },
+    { id: "sec", label: "Security", options: [["WPA", "WPA / WPA2 / WPA3"], ["WEP", "WEP"], ["nopass", "None"]] },
+    { id: "hidden", label: "Hidden network", check: true }] },
+  contact: { label: "Contact", fields: [
+    { id: "first", label: "First name" }, { id: "last", label: "Last name" }, { id: "org", label: "Company" }, { id: "title", label: "Job title" },
+    { id: "cphone", label: "Phone", type: "tel" }, { id: "cemail", label: "Email", type: "email" }, { id: "site", label: "Website", type: "url" }, { id: "addr", label: "Address" }] },
+  email: { label: "Email", fields: [{ id: "to", label: "Send to", type: "email", wide: true, ph: "hello@yourwebsite.com" }, { id: "subject", label: "Subject", wide: true }, { id: "body", label: "Message", area: true, wide: true }] },
+  phone: { label: "Call", fields: [{ id: "tel", label: "Phone number", type: "tel", wide: true, ph: "+44 20 7946 0000" }] },
+  sms: { label: "SMS", fields: [{ id: "smsTo", label: "Phone number", type: "tel", wide: true, ph: "+44 7700 900000" }, { id: "smsBody", label: "Message", area: true, wide: true }] },
+  place: { label: "Location", fields: [{ id: "lat", label: "Latitude", type: "number", ph: "51.5074", step: "any" }, { id: "lng", label: "Longitude", type: "number", ph: "-0.1278", step: "any" }] },
+  event: { label: "Event", fields: [{ id: "evName", label: "Event name", wide: true }, { id: "evStart", label: "Starts", type: "datetime-local" }, { id: "evEnd", label: "Ends", type: "datetime-local" }, { id: "evPlace", label: "Place", wide: true }] }
+};
+const val = id => { const el = $("f_" + id); if (!el) return ""; return el.type === "checkbox" ? el.checked : el.value.trim(); };
+const wifiEsc = s => s.replace(/([\\;,:"])/g, "\\$1");
+const cardEsc = s => s.replace(/\\/g, "\\\\").replace(/\n/g, "\\n").replace(/([,;])/g, "\\$1");
+const icsTime = s => s.replace(/[-:]/g, "").padEnd(15, "0").slice(0, 15);
+
+function payload() {
+  switch (state.type) {
+    case "link": { const u = val("url"); if (!u) return ""; return /^[a-z][a-z0-9+.-]*:/i.test(u) ? u : "https://" + u; }
+    case "text": return $("f_text").value;
+    case "wifi": { const s = val("ssid"); if (!s) return ""; const sec = val("sec"); return `WIFI:T:${sec};S:${wifiEsc(s)};${sec === "nopass" ? "" : `P:${wifiEsc($("f_pass").value)};`}${val("hidden") ? "H:true;" : ""};`; }
+    case "contact": {
+      const first = val("first"), last = val("last");
+      const any = ["first", "last", "org", "title", "cphone", "cemail", "site", "addr"].some(val);
+      if (!any) return "";
+      const lines = ["BEGIN:VCARD", "VERSION:3.0", `N:${cardEsc(last)};${cardEsc(first)};;;`, `FN:${cardEsc((first + " " + last).trim() || val("org"))}`];
+      if (val("org")) lines.push("ORG:" + cardEsc(val("org")));
+      if (val("title")) lines.push("TITLE:" + cardEsc(val("title")));
+      if (val("cphone")) lines.push("TEL:" + val("cphone"));
+      if (val("cemail")) lines.push("EMAIL:" + val("cemail"));
+      if (val("site")) lines.push("URL:" + val("site"));
+      if (val("addr")) lines.push("ADR:;;" + cardEsc(val("addr")) + ";;;;");
+      lines.push("END:VCARD");
+      return lines.join("\r\n");
+    }
+    case "email": { const to = val("to"); if (!to) return ""; const q = []; if (val("subject")) q.push("subject=" + encodeURIComponent(val("subject"))); if (val("body")) q.push("body=" + encodeURIComponent($("f_body").value)); return "mailto:" + to + (q.length ? "?" + q.join("&") : ""); }
+    case "phone": { const t = val("tel").replace(/[^\d+*#]/g, ""); return t ? "tel:" + t : ""; }
+    case "sms": { const t = val("smsTo").replace(/[^\d+]/g, ""); return t ? `SMSTO:${t}:${$("f_smsBody").value}` : ""; }
+    case "place": { const a = val("lat"), b = val("lng"); return a && b ? `geo:${a},${b}` : ""; }
+    case "event": {
+      if (!val("evName") || !val("evStart")) return "";
+      const l = ["BEGIN:VEVENT", "SUMMARY:" + cardEsc(val("evName")), "DTSTART:" + icsTime(val("evStart"))];
+      if (val("evEnd")) l.push("DTEND:" + icsTime(val("evEnd")));
+      if (val("evPlace")) l.push("LOCATION:" + cardEsc(val("evPlace")));
+      l.push("END:VEVENT");
+      return l.join("\r\n");
+    }
+  }
+  return "";
+}
+
+/* ---------- Drawing ---------- */
+const f = n => +n.toFixed(3);
+function rr(x, y, w, h, tl, tr, br, bl) {
+  let d = `M${f(x + tl)} ${f(y)}H${f(x + w - tr)}`;
+  if (tr) d += `A${tr} ${tr} 0 0 1 ${f(x + w)} ${f(y + tr)}`;
+  d += `V${f(y + h - br)}`;
+  if (br) d += `A${br} ${br} 0 0 1 ${f(x + w - br)} ${f(y + h)}`;
+  d += `H${f(x + bl)}`;
+  if (bl) d += `A${bl} ${bl} 0 0 1 ${f(x)} ${f(y + h - bl)}`;
+  d += `V${f(y + tl)}`;
+  if (tl) d += `A${tl} ${tl} 0 0 1 ${f(x + tl)} ${f(y)}`;
+  return d + "Z";
+}
+function modulePath(on, n, kind, ox, oy) {
+  let d = "";
+  const E = .012; // tiny overlap hides hairline gaps between touching modules
+  for (let y = 0; y < n; y++) {
+    if (kind === "bars") {
+      for (let x = 0; x < n; x++) {
+        if (!on(x, y)) continue;
+        let e = x; while (on(e + 1, y)) e++;
+        d += rr(ox + x + .05, oy + y + .07, e - x + .9, .86, .43, .43, .43, .43);
+        x = e;
+      }
+      continue;
+    }
+    for (let x = 0; x < n; x++) {
+      if (!on(x, y)) continue;
+      const X = ox + x, Y = oy + y;
+      if (kind === "dots") d += rr(X + .06, Y + .06, .88, .88, .44, .44, .44, .44);
+      else if (kind === "soft") d += rr(X + .05, Y + .05, .9, .9, .27, .27, .27, .27);
+      else if (kind === "leaf") d += rr(X + .03, Y + .03, .94, .94, .47, 0, .47, 0);
+      else {
+        const u = on(x, y - 1), r = on(x + 1, y), b = on(x, y + 1), l = on(x - 1, y);
+        const x0 = X - (l ? E : 0), y0 = Y - (u ? E : 0), w = 1 + (l ? E : 0) + (r ? E : 0), h = 1 + (u ? E : 0) + (b ? E : 0);
+        if (kind === "connected") d += rr(x0, y0, w, h, !u && !l ? .5 : 0, !u && !r ? .5 : 0, !b && !r ? .5 : 0, !b && !l ? .5 : 0);
+        else d += rr(x0, y0, w, h, 0, 0, 0, 0);
+      }
+    }
+  }
+  return d;
+}
+function eyeFrameRadii(kind, pos, big) {
+  const c = { square: [0, 0], rounded: [1.8, .9], circle: [3.5, 2.5], leaf: [2.6, 1.6] }[kind][big ? 0 : 1];
+  const a = [c, c, c, c];
+  if (kind === "leaf") a[{ tl: 2, tr: 3, bl: 1 }[pos]] = 0;
+  return a;
+}
+function eyeRing(x, y, kind, pos) { return rr(x, y, 7, 7, ...eyeFrameRadii(kind, pos, true)) + rr(x + 1, y + 1, 5, 5, ...eyeFrameRadii(kind, pos, false)); }
+function eyeBall(x, y, kind) {
+  const a = x + 2, b = y + 2;
+  if (kind === "diamond") return `M${a + 1.5} ${b - .35}L${a + 3.35} ${b + 1.5}L${a + 1.5} ${b + 3.35}L${a - .35} ${b + 1.5}Z`;
+  const r = { square: 0, rounded: .8, circle: 1.5 }[kind];
+  return rr(a, b, 3, 3, r, r, r, r);
+}
+const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+const ICONS = {
+  wifi: '<path d="M2.5 9a14 14 0 0 1 19 0M6 12.8a9 9 0 0 1 12 0M9.4 16.4a4.2 4.2 0 0 1 5.2 0"/><circle cx="12" cy="19.6" r=".7"/>',
+  link: '<path d="M10 14a4 4 0 0 0 6 .4l3-3a4 4 0 0 0-5.7-5.7l-1.6 1.6M14 10a4 4 0 0 0-6-.4l-3 3a4 4 0 0 0 5.7 5.7l1.6-1.6"/>',
+  mail: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3.5 7l8.5 6 8.5-6"/>',
+  phone: '<rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M11 18.2h2"/>',
+  pin: '<path d="M12 21.5s7-6.4 7-11.7a7 7 0 0 0-14 0c0 5.3 7 11.7 7 11.7z"/><circle cx="12" cy="9.8" r="2.4"/>'
+};
+const iconSvg = (k, c) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICONS[k]}</svg>`;
+function logoSource(s) {
+  if (s.logoKind === "none") return null;
+  if (s.logoKind === "upload") return s.logoData ? { href: s.logoData, ratio: s.logoRatio || 1 } : null;
+  return { href: "data:image/svg+xml," + encodeURIComponent(iconSvg(s.logoKind, s.eyeCustom ? s.eyeColor : s.fg)), ratio: 1 };
+}
+let uid = 0;
+function buildSvg(m, s, px) {
+  const n = m.n, q = +s.quiet, W = n + 2 * q, id = "qz" + (++uid);
+  const cap = s.frame !== "none" && s.caption.trim() ? s.caption.trim() : "";
+  const capH = cap ? Math.max(5, W * .15) : 0, H = W + capH;
+  const finder = (x, y) => (x < 7 && y < 7) || (x >= n - 7 && y < 7) || (x < 7 && y >= n - 7);
+  const logo = logoSource(s);
+  let box = null;
+  if (logo) {
+    const side = +s.logoSize / 100 * n;
+    const w = logo.ratio >= 1 ? side : side * logo.ratio, h = logo.ratio >= 1 ? side / logo.ratio : side;
+    box = { w, h, l: (n - w) / 2 - .5, r: (n + w) / 2 + .5, t: (n - h) / 2 - .5, b: (n + h) / 2 + .5 };
+  }
+  const covered = (x, y) => box && x + 1 > box.l && x < box.r && y + 1 > box.t && y < box.b;
+  let dark = 0, removed = 0;
+  for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) if (m.isDark(y, x) && !finder(x, y)) { dark++; if (covered(x, y)) removed++; }
+  const on = (x, y) => x >= 0 && y >= 0 && x < n && y < n && m.isDark(y, x) && !finder(x, y) && !covered(x, y);
+
+  let defs = "", paint = s.fg;
+  if (s.gradient !== "none") {
+    paint = `url(#${id})`;
+    const stops = `<stop offset="0" stop-color="${s.fg}"/><stop offset="1" stop-color="${s.fg2}"/>`;
+    if (s.gradient === "radial") defs = `<defs><radialGradient id="${id}" gradientUnits="userSpaceOnUse" cx="${f(W / 2)}" cy="${f(W / 2)}" r="${f(n * .72)}">${stops}</radialGradient></defs>`;
+    else {
+      const a = q, b = q + n, c = { vertical: [a, a, a, b], horizontal: [a, a, b, a], diagonal: [a, a, b, b] }[s.gradient];
+      defs = `<defs><linearGradient id="${id}" gradientUnits="userSpaceOnUse" x1="${c[0]}" y1="${c[1]}" x2="${c[2]}" y2="${c[3]}">${stops}</linearGradient></defs>`;
+    }
+  }
+  const eyePaint = s.eyeCustom ? s.eyeColor : paint;
+  const r = f(Math.min(+s.radius / 100 * W, W / 2));
+  const bg = s.transparent ? "" : `<path fill="${s.bg}" d="${rr(0, 0, W, H, r, r, r, r)}"/>`;
+  const rings = eyeRing(q, q, s.eyeFrame, "tl") + eyeRing(q + n - 7, q, s.eyeFrame, "tr") + eyeRing(q, q + n - 7, s.eyeFrame, "bl");
+  const balls = eyeBall(q, q, s.eyeBall) + eyeBall(q + n - 7, q, s.eyeBall) + eyeBall(q, q + n - 7, s.eyeBall);
+  let body = `<path fill="${paint}" d="${modulePath(on, n, s.module, q, q)}"/><path fill="${eyePaint}" fill-rule="evenodd" d="${rings}"/><path fill="${eyePaint}" d="${balls}"/>`;
+  if (logo) body += `<image href="${esc(logo.href)}" x="${f(q + (n - box.w) / 2)}" y="${f(q + (n - box.h) / 2)}" width="${f(box.w)}" height="${f(box.h)}" preserveAspectRatio="xMidYMid meet"/>`;
+  if (cap) {
+    const size = f(Math.min(capH * .5, W * .86 / (cap.length * .66)));
+    const rb = f(Math.min(r, capH));
+    let ink = s.fg;
+    if (s.frame === "banner") {
+      body += `<path fill="${s.fg}" d="${rr(0, W, W, capH, 0, 0, rb, rb)}"/>`;
+      ink = s.transparent ? (luminance(s.fg) > .4 ? "#000000" : "#ffffff") : s.bg;
+    }
+    body += `<text x="${f(W / 2)}" y="${f(W + capH / 2)}" fill="${ink}" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-weight="700" font-size="${size}" letter-spacing="${f(size * .05)}" text-anchor="middle" dominant-baseline="central">${esc(cap)}</text>`;
+  }
+  const size = px ? `width="${px}" height="${Math.round(px * H / W)}" ` : "";
+  return { svg: `<svg xmlns="http://www.w3.org/2000/svg" ${size}viewBox="0 0 ${f(W)} ${f(H)}">${defs}${bg}${body}</svg>`, W, H, removed, dark };
+}
+function luminance(hex) {
+  const v = [1, 3, 5].map(i => parseInt(hex.substr(i, 2), 16) / 255).map(c => c <= .03928 ? c / 12.92 : Math.pow((c + .055) / 1.055, 2.4));
+  return .2126 * v[0] + .7152 * v[1] + .0722 * v[2];
+}
+const contrast = (a, b) => { const x = luminance(a), y = luminance(b); return (Math.max(x, y) + .05) / (Math.min(x, y) + .05); };
+
+/* ---------- QR matrix ---------- */
+const libOk = typeof qrcode === "function";
+if (libOk) qrcode.stringToBytes = s => Array.from(new TextEncoder().encode(s));
+let cache = { key: null, m: null };
+function matrix(text, ec) {
+  const key = ec + "|" + text;
+  if (cache.key === key) return cache.m;
+  const qr = qrcode(0, ec);
+  qr.addData(text, "Byte");
+  qr.make();
+  const m = { n: qr.getModuleCount(), isDark: (r, c) => qr.isDark(r, c) };
+  cache = { key, m };
+  return m;
+}
+
+/* ---------- Raster + scan test ---------- */
+function svgToCanvas(svg, w, h, matte) {
+  return new Promise((res, rej) => {
+    const img = new Image();
+    img.onload = () => {
+      const c = document.createElement("canvas"); c.width = w; c.height = h;
+      const g = c.getContext("2d", { willReadFrequently: !!matte });
+      if (matte) { g.fillStyle = matte; g.fillRect(0, 0, w, h); }
+      g.drawImage(img, 0, 0, w, h);
+      res(c);
+    };
+    img.onerror = () => rej(new Error("The image could not be drawn."));
+    img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+  });
+}
+/* jsQR's result depends heavily on image size, so a design only fails once the
+   browser's own reader (where there is one) and jsQR at several sizes all miss. */
+const nativeReader = (() => { try { return "BarcodeDetector" in window ? new BarcodeDetector({ formats: ["qr_code"] }) : null; } catch (e) { return null; } })();
+async function drawAt(m, s, perModule) {
+  const px = (m.n + 2 * +s.quiet) * perModule, out = buildSvg(m, s, px), h = Math.round(px * out.H / out.W);
+  return svgToCanvas(out.svg, px, h, s.transparent ? "#ffffff" : null);
+}
+async function scanTest(text, m, s) {
+  const hasJsQR = typeof jsQR === "function";
+  if (!nativeReader && !hasJsQR) return "unavailable";
+  if (nativeReader) {
+    try { const found = await nativeReader.detect(await drawAt(m, s, 8)); if (found.some(c => c.rawValue === text)) return "pass"; }
+    catch (e) { if (!hasJsQR) return "unavailable"; }
+  }
+  if (hasJsQR) {
+    const want = new TextEncoder().encode(text);
+    for (const perModule of [4, 6, 12]) {
+      const c = await drawAt(m, s, perModule);
+      const d = c.getContext("2d").getImageData(0, 0, c.width, c.height);
+      const code = jsQR(d.data, c.width, c.height, { inversionAttempts: "attemptBoth" });
+      if (code && code.binaryData.length === want.length && want.every((b, i) => b === code.binaryData[i])) return "pass";
+    }
+  }
+  return "fail";
+}
+
+/* ---------- Page wiring ---------- */
+let current = null, scanTimer = 0, scanToken = 0;
+function setPill(s, icon, text) { const p = $("pill"); p.dataset.s = s; $("pillIcon").textContent = icon; $("pillText").textContent = text; }
+function setNotes(list) {
+  const ul = $("notes"); ul.textContent = "";
+  list.forEach(n => { const li = document.createElement("li"); li.textContent = n.text; if (n.bad) li.className = "bad"; ul.appendChild(li); });
+}
+function setSaving(on) { ["savePng", "saveSvg", "copySvg"].forEach(i => $(i).disabled = !on); }
+function clearReadout() { ["rVersion", "rModules", "rEc", "rPrint"].forEach(i => $(i).textContent = "–"); }
+function showEmpty(msg) {
+  const a = $("art"); a.classList.remove("see-through"); a.innerHTML = "";
+  const d = document.createElement("div"); d.className = "empty"; d.textContent = msg; a.appendChild(d);
+  current = null; setSaving(false); clearReadout();
+}
+function styleNotes(out, m) {
+  const notes = [];
+  if (!state.transparent) {
+    const inks = [state.fg].concat(state.gradient !== "none" ? [state.fg2] : []).concat(state.eyeCustom ? [state.eyeColor] : []);
+    const low = Math.min.apply(null, inks.map(c => contrast(c, state.bg)));
+    if (low < 2) notes.push({ bad: true, blocks: true, text: `The contrast between code and background is ${low.toFixed(1)}:1, too low for a phone camera to read reliably. Aim for at least 4:1.` });
+    else if (low < 3) notes.push({ text: `The contrast between code and background is low (${low.toFixed(1)}:1). Aim for at least 4:1.` });
+    if (luminance(state.fg) > luminance(state.bg)) notes.push({ text: "This is a light code on a dark background. Some scanner apps can't read inverted codes, so test it on several phones." });
+  } else notes.push({ text: "With a transparent background, place the code on a plain, light surface." });
+  if (+state.quiet < 2) notes.push({ text: "The quiet zone is very small. Leave blank space around the code wherever you place it." });
+  if (out.removed && out.dark) {
+    const pct = Math.round(out.removed / out.dark * 100), rep = EC_REPAIR[state.ec];
+    if (pct > rep * .75) notes.push({ text: `The logo hides about ${pct}% of the data modules, and level ${state.ec} repairs up to ${rep}% of damage. Make the logo smaller${state.ec === "H" ? "" : " or use level H"}.` });
+  }
+  if ((m.n - 17) / 4 > 15) notes.push({ text: "This code is dense because it holds a lot of text. Print it larger, or shorten the content." });
+  return notes;
+}
+function render() {
+  const text = payload();
+  $("encoded").textContent = text || "Nothing yet. Fill in the fields above.";
+  $("logoSizeOut").textContent = state.logoSize + "% of the code";
+  $("quietOut").textContent = state.quiet + (+state.quiet === 1 ? " module" : " modules");
+  $("radiusOut").textContent = state.radius + "%";
+  $("fg2Wrap").hidden = state.gradient === "none";
+  $("eyeWrap").hidden = !state.eyeCustom;
+  $("captionWrap").hidden = state.frame === "none";
+  $("logoSizeWrap").hidden = state.logoKind === "none";
+  $("bgPick").disabled = $("bgHex").disabled = state.transparent;
+  if (!libOk) { showEmpty("The QR code engine didn't load. Check your connection and reload the page."); setPill("bad", "×", "Not available"); setNotes([]); return; }
+  clearTimeout(scanTimer); scanToken++;
+  if (!text) { showEmpty("Fill in the details and your code appears here."); setPill("idle", "…", "Waiting for content"); setNotes([]); return; }
+  let m;
+  try { m = matrix(text, state.ec); }
+  catch (e) {
+    showEmpty("That's too much content for one code at this level.");
+    setPill("bad", "×", "Too long");
+    setNotes([{ bad: true, text: state.ec === "L" ? "Shorten the content. A single code holds at most about 2,900 bytes." : `Shorten the content or lower error correction from ${state.ec}.` }]);
+    return;
+  }
+  const s = Object.assign({}, state), out = buildSvg(m, s);
+  const art = $("art"); art.innerHTML = out.svg; art.classList.toggle("see-through", !!s.transparent);
+  art.setAttribute("aria-label", "QR code for: " + text.slice(0, 120));
+  current = { text, m, s, W: out.W, H: out.H };
+  setSaving(true);
+  const units = m.n + 2 * +s.quiet;
+  $("rVersion").textContent = (m.n - 17) / 4;
+  $("rModules").textContent = m.n + "×" + m.n;
+  $("rEc").textContent = "≤" + EC_REPAIR[s.ec] + "%";
+  $("rPrint").textContent = (units * .04).toFixed(1) + " cm";
+  const notes = styleNotes(out, m);
+  setNotes(notes);
+  setPill("idle", "…", "Testing scan");
+  const token = scanToken;
+  scanTimer = setTimeout(async () => {
+    let r;
+    try { r = await scanTest(text, m, s); } catch (e) { r = "unavailable"; }
+    if (token !== scanToken) return;
+    if (notes.some(n => n.blocks)) setPill("bad", "×", "Contrast too low");
+    else if (r === "pass") setPill(notes.length ? "warn" : "ok", notes.length ? "!" : "✓", notes.length ? "Scan test passed, see notes" : "Scan test passed");
+    else if (r === "fail") { setPill("bad", "×", "Scan test failed"); setNotes([{ bad: true, text: "The test reader couldn't read this design. Try more contrast, a simpler module shape, a smaller logo or higher error correction." }].concat(notes)); }
+    else setPill("idle", "?", "Scan test unavailable");
+  }, 220);
+  saveStyle();
+}
+let renderQueued = false;
+function schedule() { if (renderQueued) return; renderQueued = true; requestAnimationFrame(() => { renderQueued = false; render(); }); }
+
+function saveStyle() {
+  try { const o = {}; Object.keys(STYLE_DEFAULTS).forEach(k => o[k] = state[k]); if (o.logoKind === "upload") o.logoKind = "none"; localStorage.setItem(STYLE_KEY, JSON.stringify(o)); } catch (e) {}
+}
+function loadStyle() {
+  try { const o = JSON.parse(localStorage.getItem(STYLE_KEY) || "null"); if (o) Object.keys(STYLE_DEFAULTS).forEach(k => { if (k in o && typeof o[k] === typeof STYLE_DEFAULTS[k]) state[k] = o[k]; }); } catch (e) {}
+}
+
+/* Option tiles */
+function tile(group, value, label, svg, wrap) {
+  const l = document.createElement("label"); l.className = "opt";
+  const i = document.createElement("input"); i.type = "radio"; i.name = group; i.value = value; i.id = group + "_" + value;
+  const s = document.createElement("span"); s.innerHTML = (svg || "") ; s.appendChild(document.createTextNode(label));
+  l.append(i, s); wrap.appendChild(l);
+}
+const SAMPLE = ["11011", "10110", "01101", "11010", "10111"];
+function moduleSwatch(kind) {
+  const on = (x, y) => y >= 0 && y < 5 && x >= 0 && x < 5 && SAMPLE[y][x] === "1";
+  return `<svg viewBox="0 0 5 5" aria-hidden="true"><path fill="currentColor" d="${modulePath(on, 5, kind, 0, 0)}"/></svg>`;
+}
+const frameSwatch = k => `<svg viewBox="0 0 7 7" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="${eyeRing(0, 0, k, "tl")}"/></svg>`;
+const ballSwatch = k => `<svg viewBox="0 0 7 7" aria-hidden="true"><path fill="currentColor" d="${eyeBall(0, 0, k)}"/></svg>`;
+const iconSwatch = k => k === "none"
+  ? '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="8"/><path d="M6.5 6.5l11 11"/></svg>'
+  : iconSvg(k, "currentColor").replace("<svg ", '<svg aria-hidden="true" ');
+[["square", "Square"], ["soft", "Soft"], ["connected", "Joined"], ["dots", "Dots"], ["leaf", "Leaf"], ["bars", "Bars"]].forEach(([v, l]) => tile("module", v, l, moduleSwatch(v), $("moduleOpts")));
+[["square", "Square"], ["rounded", "Rounded"], ["circle", "Circle"], ["leaf", "Leaf"]].forEach(([v, l]) => tile("eyeFrame", v, l, frameSwatch(v), $("frameOpts")));
+[["square", "Square"], ["rounded", "Rounded"], ["circle", "Circle"], ["diamond", "Diamond"]].forEach(([v, l]) => tile("eyeBall", v, l, ballSwatch(v), $("ballOpts")));
+[["none", "None"], ["wifi", "Wi-Fi"], ["link", "Link"], ["mail", "Mail"], ["phone", "Phone"], ["pin", "Pin"]].forEach(([v, l]) => tile("logoKind", v, l, iconSwatch(v), $("logoOpts")));
+[["none", "No label"], ["text", "Text below"], ["banner", "Banner"]].forEach(([v, l]) => tile("frame", v, l, "", $("labelOpts")));
+[["L", "L · 7%"], ["M", "M · 15%"], ["Q", "Q · 25%"], ["H", "H · 30%"]].forEach(([v, l]) => tile("ec", v, l, "", $("ecOpts")));
+
+/* Content fields */
+Object.keys(TYPES).forEach(k => {
+  tile("type", k, TYPES[k].label, "", $("types"));
+  const panel = document.createElement("div"); panel.className = "fields"; panel.id = "panel_" + k; panel.hidden = true;
+  TYPES[k].fields.forEach(d => {
+    const fid = "f_" + d.id, w = document.createElement("div"); w.className = "field" + (d.wide ? " wide" : "");
+    if (d.check) {
+      const l = document.createElement("label"); l.className = "check"; l.style.alignSelf = "end"; l.style.paddingBottom = "9px";
+      const i = document.createElement("input"); i.type = "checkbox"; i.id = fid; i.dataset.content = "1";
+      l.append(i, document.createTextNode(d.label)); w.appendChild(l);
+    } else {
+      const l = document.createElement("label"); l.className = "lab"; l.htmlFor = fid; l.textContent = d.label;
+      let i;
+      if (d.options) { i = document.createElement("select"); d.options.forEach(([v, t]) => { const o = document.createElement("option"); o.value = v; o.textContent = t; i.appendChild(o); }); }
+      else if (d.area) { i = document.createElement("textarea"); }
+      else { i = document.createElement("input"); i.type = d.type || "text"; if (d.step) i.step = d.step; }
+      i.id = fid; i.dataset.content = "1"; if (d.ph) i.placeholder = d.ph; if (d.value) i.value = d.value;
+      w.append(l, i);
+      if (d.hint) { const h = document.createElement("small"); h.id = fid + "_hint"; h.textContent = d.hint; w.appendChild(h); }
+    }
+    panel.appendChild(w);
+  });
+  $("typeFields").appendChild(panel);
+});
+
+function syncControls() {
+  ["module", "eyeFrame", "eyeBall", "logoKind", "frame", "ec", "type"].forEach(n => { const i = document.querySelector(`input[name="${n}"][value="${state[n]}"]`); if (i) i.checked = true; });
+  [["fg", "fg"], ["fg2", "fg2"], ["bg", "bg"], ["eye", "eyeColor"]].forEach(([p, k]) => { $(p + "Pick").value = state[k]; $(p + "Hex").value = state[k]; });
+  ["gradient", "radius", "logoSize", "caption", "quiet", "filename", "pngSize"].forEach(k => { $(k).value = state[k]; });
+  ["eyeCustom", "transparent"].forEach(k => { $(k).checked = state[k]; });
+  Object.keys(TYPES).forEach(k => { $("panel_" + k).hidden = k !== state.type; });
+}
+
+$("form").addEventListener("submit", e => e.preventDefault());
+document.addEventListener("input", e => {
+  const t = e.target;
+  if (t.type === "radio") {
+    state[t.name] = t.value;
+    if (t.name === "type") syncControls();
+    if (t.name === "logoKind" && t.value !== "none") {
+      if (state.ec !== "H") { state.ec = "H"; syncControls(); }
+    }
+  } else if (t.dataset.k) state[t.dataset.k] = t.type === "checkbox" ? t.checked : t.value;
+  else if (t.dataset.content) { const hint = $("f_url_hint"); if (t.id === "f_url" && hint) hint.hidden = true; }
+  else {
+    const m = /^(fg2|fg|bg|eye)(Pick|Hex)$/.exec(t.id);
+    if (!m) return;
+    const key = { fg: "fg", fg2: "fg2", bg: "bg", eye: "eyeColor" }[m[1]];
+    const v = t.value.trim();
+    if (!/^#[0-9a-fA-F]{6}$/.test(v)) return;
+    state[key] = v.toLowerCase();
+    if (m[2] === "Pick") $(m[1] + "Hex").value = state[key]; else $(m[1] + "Pick").value = state[key];
+  }
+  schedule();
+});
+$("reset").addEventListener("click", () => { Object.assign(state, STYLE_DEFAULTS, { logoData: null }); $("logoName").textContent = "PNG, JPG, WebP or SVG. You can also drop a file here."; syncControls(); render(); status("Styling reset."); });
+
+/* Presets */
+const PRESETS = [
+  { name: "Plain ink", module: "square", eyeFrame: "square", eyeBall: "square", fg: "#000000", fg2: "#000000", gradient: "none", eyeCustom: false, bg: "#ffffff", frame: "none", radius: 0 },
+  { name: "Harbour", module: "connected", eyeFrame: "rounded", eyeBall: "rounded", fg: "#10394f", fg2: "#0f7a6c", gradient: "diagonal", eyeCustom: false, bg: "#ffffff", frame: "banner", radius: 3 },
+  { name: "Plum", module: "dots", eyeFrame: "circle", eyeBall: "circle", fg: "#4b1d6e", fg2: "#b0266b", gradient: "vertical", eyeCustom: false, bg: "#fff7fb", frame: "text", radius: 6 },
+  { name: "Marigold", module: "soft", eyeFrame: "leaf", eyeBall: "rounded", fg: "#2a1a00", fg2: "#2a1a00", gradient: "none", eyeCustom: true, eyeColor: "#a33b00", bg: "#ffd24a", frame: "banner", radius: 6 },
+  { name: "Fern", module: "leaf", eyeFrame: "leaf", eyeBall: "circle", fg: "#124a2f", fg2: "#2f8a43", gradient: "radial", eyeCustom: false, bg: "#f3fbf2", frame: "none", radius: 3 }
+];
+function renderPresets() {
+  const wrap = $("presets");
+  const mini = libOk ? (() => { const q = qrcode(1, "L"); q.addData("QUIET", "Byte"); q.make(); return { n: q.getModuleCount(), isDark: (r, c) => q.isDark(r, c) }; })() : null;
+  PRESETS.forEach(p => {
+    const b = document.createElement("button"); b.type = "button"; b.className = "preset";
+    const s = Object.assign({}, STYLE_DEFAULTS, p, { frame: "none", quiet: 2, logoKind: "none", radius: 0 });
+    if (mini) b.innerHTML = buildSvg(mini, s).svg;
+    b.appendChild(document.createTextNode(p.name));
+    b.addEventListener("click", () => {
+      const { name, ...style } = p; Object.assign(state, style);
+      if (!("eyeColor" in style)) state.eyeColor = style.fg;
+      syncControls(); render(); status(name + " applied.");
+    });
+    wrap.appendChild(b);
+  });
+}
+
+/* Logo upload */
+function readLogo(file) {
+  if (!file) return;
+  if (!/^image\/(png|jpeg|webp|svg\+xml)$/.test(file.type)) { status("That file type isn't supported. Use PNG, JPG, WebP or SVG."); return; }
+  if (file.size > 10 * 1024 * 1024) { status("That file is over 10 MB. Use a smaller logo."); return; }
+  const fr = new FileReader();
+  fr.onerror = () => status("That file couldn't be read. Try another one.");
+  fr.onload = () => {
+    const img = new Image();
+    img.onerror = () => status("That image couldn't be opened. Try another file.");
+    img.onload = () => {
+      const w = img.naturalWidth || 1, h = img.naturalHeight || 1;
+      let data = fr.result;
+      if (file.type !== "image/svg+xml" && Math.max(w, h) > 600) {
+        const k = 600 / Math.max(w, h), c = document.createElement("canvas");
+        c.width = Math.round(w * k); c.height = Math.round(h * k);
+        c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+        data = c.toDataURL("image/png");
+      }
+      state.logoData = data; state.logoRatio = w / h; state.logoKind = "upload"; state.ec = "H";
+      document.querySelectorAll('input[name="logoKind"]').forEach(i => i.checked = false);
+      $("logoName").textContent = file.name;
+      syncControls(); render();
+    };
+    img.src = fr.result;
+  };
+  fr.readAsDataURL(file);
+}
+$("logoBtn").addEventListener("click", () => $("logoFile").click());
+$("logoFile").addEventListener("change", e => { readLogo(e.target.files[0]); e.target.value = ""; });
+["dragenter", "dragover"].forEach(ev => $("drop").addEventListener(ev, e => { e.preventDefault(); $("drop").classList.add("over"); }));
+["dragleave", "drop"].forEach(ev => $("drop").addEventListener(ev, e => { e.preventDefault(); $("drop").classList.remove("over"); }));
+$("drop").addEventListener("drop", e => readLogo(e.dataTransfer.files[0]));
+
+/* Saving */
+function status(msg) { $("status").textContent = msg; }
+const downloadsReady = window.claude && window.claude.use ? window.claude.use("downloads").catch(() => null) : Promise.resolve(null);
+const baseName = () => (state.filename || "").trim().replace(/[^\w.-]+/g, "-").replace(/^-+|-+$|\.(png|svg)$/gi, "") || "qr-code";
+async function offer(filename, blob) {
+  const dl = await downloadsReady;
+  if (dl) {
+    try { await dl.save({ filename, data: blob }); status("Saved " + filename + "."); }
+    catch (e) {
+      const c = e && e.code;
+      if (c === "declined") status("Download cancelled.");
+      else if (c === "rate_limited") status("A download prompt is already open. Finish that one, then try again.");
+      else status("Downloads aren't available in this view. Use Copy SVG instead.");
+    }
+    return;
+  }
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+  status("Your browser should start the download. If nothing happens, use Copy SVG instead.");
+}
+$("savePng").addEventListener("click", async () => {
+  if (!current) return;
+  status("Preparing PNG…");
+  try {
+    const px = +state.pngSize, out = buildSvg(current.m, current.s, px);
+    const c = await svgToCanvas(out.svg, px, Math.round(px * out.H / out.W), null);
+    const blob = await new Promise(r => c.toBlob(r, "image/png"));
+    if (!blob) throw new Error("empty");
+    await offer(baseName() + ".png", blob);
+  } catch (e) { status("The PNG couldn't be created. Try Download SVG, or remove the uploaded logo."); }
+});
+$("saveSvg").addEventListener("click", () => {
+  if (!current) return;
+  const out = buildSvg(current.m, current.s, 1024);
+  offer(baseName() + ".svg", new Blob([out.svg], { type: "image/svg+xml" }));
+});
+$("copySvg").addEventListener("click", async () => {
+  if (!current) return;
+  const out = buildSvg(current.m, current.s, 1024), box = $("copyFallback");
+  try { await navigator.clipboard.writeText(out.svg); box.hidden = true; status("SVG code copied."); }
+  catch (e) { box.value = out.svg; box.hidden = false; box.focus(); box.select(); status("Your browser blocked copying. The code is selected below, so press Ctrl or Cmd + C."); }
+});
+
+loadStyle();
+renderPresets();
+syncControls();
+render();
+</script>
+</body>
+</html>
