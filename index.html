@@ -3,252 +3,315 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<style>:root{color-scheme:light}body{margin:0;font:14px system-ui}img{max-width:100%}[hidden]{display:none!important}</style>
+<style>:root{color-scheme:dark}body{margin:0;font:14px system-ui}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>Quiet Zone QR</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Schibsted+Grotesk:wght@400;500;700&family=Martian+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: a print-shop bench. Controls run down the left; the code sits on a green cutting mat that stays in view on the right. */
+/* Layout: a scanner console floating over a live field of QR modules. One dark look by choice; the code itself stays on white so it scans. */
 :root {
-  --bg: #f0f4f1; --surface: #ffffff; --fg: #14221c; --muted: #52635b; --line: #ccd7d1; --strong-line: #14221c;
-  --mat: #17594a; --mat-line: rgba(255,255,255,.1); --mat-line-major: rgba(255,255,255,.2); --mat-ink: #e6f4ee; --mat-muted: #a9cfc2;
-  --accent: #f4bb1f; --accent-ink: #231a00; --accent-hover: #ffcd42;
-  --ok-bg: #d9f5e3; --ok-fg: #0d5a30; --warn-bg: #fff0c7; --warn-fg: #6d4b00; --bad-bg: #ffdfda; --bad-fg: #8f1d10; --idle-bg: #dfe8e3; --idle-fg: #2f3f38;
-  --check-a: #ffffff; --check-b: #d9dfdc; --shadow: rgba(4,28,22,.4);
-  --display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", sans-serif;
-  --body: "Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif;
-  --mono: "Martian Mono", ui-monospace, Menlo, Consolas, monospace;
-}
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-  --bg: #0e1613; --surface: #17211d; --fg: #e5efea; --muted: #99aca3; --line: #2d3b35; --strong-line: #e5efea;
-  --mat: #0f3f34; --mat-line: rgba(255,255,255,.07); --mat-line-major: rgba(255,255,255,.15); --mat-ink: #e6f4ee; --mat-muted: #9bc5b7;
-  --accent: #f4bb1f; --accent-ink: #231a00; --accent-hover: #ffcd42;
-  --ok-bg: #123f28; --ok-fg: #a9f0c5; --warn-bg: #443305; --warn-fg: #ffdf8d; --bad-bg: #4d1a14; --bad-fg: #ffc2b9; --idle-bg: #26332e; --idle-fg: #cbdad3;
-  --check-a: #ffffff; --check-b: #d9dfdc; --shadow: rgba(0,0,0,.55); color-scheme: dark;
-} }
-:root[data-theme="dark"] {
-  --bg: #0e1613; --surface: #17211d; --fg: #e5efea; --muted: #99aca3; --line: #2d3b35; --strong-line: #e5efea;
-  --mat: #0f3f34; --mat-line: rgba(255,255,255,.07); --mat-line-major: rgba(255,255,255,.15); --mat-ink: #e6f4ee; --mat-muted: #9bc5b7;
-  --accent: #f4bb1f; --accent-ink: #231a00; --accent-hover: #ffcd42;
-  --ok-bg: #123f28; --ok-fg: #a9f0c5; --warn-bg: #443305; --warn-fg: #ffdf8d; --bad-bg: #4d1a14; --bad-fg: #ffc2b9; --idle-bg: #26332e; --idle-fg: #cbdad3;
-  --check-a: #ffffff; --check-b: #d9dfdc; --shadow: rgba(0,0,0,.55); color-scheme: dark;
+  --bg: #060a14; --bg-2: #0b1324; --fg: #e8f1fb; --muted: #8ea2b8; --line: rgba(150, 190, 230, .16); --line-strong: rgba(150, 190, 230, .32);
+  --glass: rgba(14, 23, 42, .66); --field: rgba(7, 12, 24, .72); --hover: rgba(70, 200, 240, .08);
+  --cyan: #2fe6d8; --blue: #3b8cff; --ink: #03111a; --glow: rgba(47, 230, 216, .35);
+  --ok: #4cf0b0; --warn: #ffc857; --warn-bg: rgba(255, 200, 87, .12); --bad: #ff6b6b; --bad-bg: rgba(255, 107, 107, .13);
+  --check-a: #ffffff; --check-b: #d5dbe3;
+  --display: "Chakra Petch", "Avenir Next", "Segoe UI", sans-serif;
+  --body: "Geist", "Helvetica Neue", Arial, sans-serif;
+  --mono: "Geist Mono", ui-monospace, Menlo, Consolas, monospace;
+  interpolate-size: allow-keywords;
 }
 * { box-sizing: border-box; }
-body { background: var(--bg); color: var(--fg); font: 400 15px/1.5 var(--body); }
-.wrap { max-width: 1160px; margin: 0 auto; padding-block: 28px 56px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
-header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 20px; margin-bottom: 24px; }
-h1 { margin: 0; font: 800 clamp(32px, 5vw, 46px)/1 var(--display); letter-spacing: -.025em; text-wrap: balance; }
-.lede { margin: 0; flex: 1 1 340px; max-width: 62ch; color: var(--muted); }
-.bench { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 450px); gap: 40px; align-items: start; }
-.controls { display: grid; gap: 0; min-width: 0; }
-.group { display: grid; gap: 14px; padding-block: 22px; border-top: 1px solid var(--line); min-width: 0; }
-.group:first-child { border-top: 0; padding-top: 0; }
-h2 { margin: 0; font: 600 21px/1.2 var(--display); letter-spacing: -.01em; }
-.sub { margin: -8px 0 0; color: var(--muted); font-size: 14px; }
-fieldset { border: 0; margin: 0; padding: 0; min-width: 0; display: grid; gap: 8px; }
-legend, .lab { padding: 0; font-weight: 500; font-size: 14px; }
-legend { margin-bottom: 8px; }
-.field { display: grid; gap: 5px; min-width: 0; }
-.field small, .hint { color: var(--muted); font-size: 13px; }
-.fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+html { background: var(--bg); }
+body { background: radial-gradient(1100px 620px at 78% -8%, #12305a 0%, transparent 62%), radial-gradient(800px 520px at -6% 104%, #0b3a44 0%, transparent 60%), var(--bg); background-attachment: fixed; color: var(--fg); font: 400 15px/1.5 var(--body); min-height: 100vh; }
+#field { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+.wrap { position: relative; z-index: 1; max-width: 980px; margin: 0 auto; padding-block: 36px 72px; padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); }
+
+header { display: flex; align-items: center; gap: 16px; margin-bottom: 34px; }
+.mark { position: relative; flex: none; width: 48px; height: 48px; border: 5px solid var(--cyan); border-radius: 9px; box-shadow: 0 0 22px var(--glow), inset 0 0 12px rgba(47, 230, 216, .2); }
+.mark::after { content: ""; position: absolute; inset: 7px; border-radius: 3px; background: linear-gradient(135deg, var(--cyan), var(--blue)); animation: pulse 2.6s ease-in-out infinite; }
+h1 { margin: 0; font: 700 clamp(30px, 5vw, 42px)/1.05 var(--display); letter-spacing: -.005em; white-space: nowrap; cursor: default; background: linear-gradient(95deg, #ffffff 30%, var(--cyan) 75%, var(--blue)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.lede { margin: 4px 0 0; color: var(--muted); }
+
+.bench { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 400px); gap: 40px; align-items: start; }
+.controls { display: grid; gap: 26px; min-width: 0; }
+.block { display: grid; gap: 9px; min-width: 0; }
+.lab, legend { padding: 0; font: 500 12px/1.4 var(--mono); letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
+legend { margin-bottom: 9px; }
+fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
+.field { display: grid; gap: 7px; min-width: 0; }
+.field small { color: var(--muted); font-size: 13px; }
+.fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
 .fields .wide { grid-column: 1 / -1; }
+#typeFields { margin-top: 6px; }
 input[type=text], input[type=url], input[type=email], input[type=tel], input[type=password], input[type=number], input[type=datetime-local], textarea, select {
-  width: 100%; min-width: 0; padding: 9px 11px; font: 400 15px/1.35 var(--body); color: var(--fg); background: var(--surface); border: 1px solid var(--line); border-radius: 6px;
+  width: 100%; min-width: 0; padding: 12px 14px; font: 400 16px/1.35 var(--body); color: var(--fg); background: var(--field); border: 1px solid var(--line); border-radius: 10px; backdrop-filter: blur(6px);
+  transition: border-color .18s, box-shadow .18s, background-color .18s;
 }
-textarea { resize: vertical; min-height: 84px; }
-input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
-.opt input:focus-visible + span { outline: 2px solid var(--fg); outline-offset: 2px; }
-.opts { display: grid; gap: 8px; }
+input::placeholder, textarea::placeholder { color: #66788d; }
+select option { background: var(--bg-2); color: var(--fg); }
+input[type=text]:hover, input[type=url]:hover, input[type=email]:hover, input[type=tel]:hover, input[type=password]:hover, input[type=number]:hover, input[type=datetime-local]:hover, textarea:hover, select:hover { border-color: var(--line-strong); }
+input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 0; border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(47, 230, 216, .16), 0 0 26px rgba(47, 230, 216, .16); }
+textarea { resize: vertical; min-height: 92px; }
+button:focus-visible, summary:focus-visible, .opt input:focus-visible + span { outline: 2px solid var(--cyan); outline-offset: 2px; }
+
+/* Pointer spotlight shared by interactive surfaces */
+.spot { position: relative; isolation: isolate; }
+.spot::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; opacity: 0; pointer-events: none; background: radial-gradient(130px circle at var(--mx, 50%) var(--my, 50%), rgba(47, 230, 216, .2), transparent 72%); transition: opacity .2s; }
+.spot:hover::before { opacity: 1; }
+
+.presets { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+.preset { display: grid; gap: 7px; justify-items: center; padding: 9px 5px 8px; font: 500 12.5px/1.2 var(--body); color: var(--muted); background: var(--glass); border: 1px solid var(--line); border-radius: 12px; cursor: pointer; backdrop-filter: blur(6px); transition: transform .2s cubic-bezier(.2, .9, .3, 1.3), border-color .2s, color .2s, box-shadow .2s; }
+.preset:hover { transform: translateY(-4px); color: var(--fg); border-color: var(--line-strong); box-shadow: 0 10px 24px rgba(0, 0, 0, .4); }
+.preset:active { transform: translateY(-1px) scale(.97); }
+.preset.on { color: var(--fg); border-color: var(--cyan); box-shadow: 0 0 0 1px var(--cyan), 0 0 22px var(--glow); }
+.preset svg { display: block; width: 100%; max-width: 62px; height: auto; border-radius: 4px; background: #fff; }
+
+.more { display: grid; gap: 8px; }
+details.sect { background: var(--glass); border: 1px solid var(--line); border-radius: 12px; backdrop-filter: blur(6px); transition: border-color .2s, box-shadow .2s; }
+details.sect:hover { border-color: var(--line-strong); }
+details.sect[open] { border-color: rgba(47, 230, 216, .45); box-shadow: 0 0 26px rgba(47, 230, 216, .08); }
+details.sect > summary { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; font-weight: 500; cursor: pointer; list-style: none; border-radius: inherit; }
+details.sect > summary::-webkit-details-marker { display: none; }
+details.sect > summary::after { content: "+"; font: 400 22px/1 var(--mono); color: var(--cyan); transition: transform .25s cubic-bezier(.2, .9, .3, 1.2); }
+details.sect[open] > summary::after { transform: rotate(135deg); }
+details.sect::details-content { height: 0; overflow: clip; transition: height .28s ease, content-visibility .28s allow-discrete; }
+details.sect[open]::details-content { height: auto; }
+.sect-body { display: grid; gap: 18px; padding: 4px 16px 20px; min-width: 0; }
+
+.opts { display: grid; gap: 7px; }
 .opts.six { grid-template-columns: repeat(6, minmax(0, 1fr)); }
 .opts.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .opts.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.opts.tabs { display: flex; flex-wrap: wrap; gap: 6px; }
 .opt { position: relative; display: block; cursor: pointer; min-width: 0; }
 .opt input { position: absolute; opacity: 0; inset: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
-.opt > span { display: grid; justify-items: center; gap: 5px; padding: 9px 3px 7px; height: 100%; text-align: center; font-size: 12.5px; line-height: 1.2; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; }
-.opt svg { width: 100%; max-width: 40px; height: auto; display: block; }
-.opt:hover > span { border-color: var(--muted); }
-.opt input:checked + span { border-color: var(--strong-line); box-shadow: inset 0 0 0 1px var(--strong-line); font-weight: 700; }
-.tabs .opt > span { padding: 7px 13px; font-size: 14px; }
-.tabs .opt input:checked + span { background: var(--fg); color: var(--bg); }
-.presets { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
-.preset { padding: 7px 7px 6px; display: grid; gap: 5px; justify-items: center; font: 500 12.5px/1.2 var(--body); color: var(--fg); background: var(--surface); border: 1px solid var(--line); border-radius: 6px; cursor: pointer; }
-.preset:hover { border-color: var(--muted); }
-.preset svg { display: block; width: 100%; height: auto; border-radius: 3px; }
-.colors { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
-.color { display: grid; grid-template-columns: 42px minmax(0, 1fr); gap: 7px; }
-input[type=color] { width: 42px; height: 40px; padding: 2px; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; cursor: pointer; }
-.color input[type=text] { font: 400 13px/1.3 var(--mono); }
-.check { display: flex; gap: 8px; align-items: center; cursor: pointer; font-size: 14px; }
-.check input { width: 17px; height: 17px; margin: 0; accent-color: var(--fg); }
-input[type=range] { width: 100%; margin: 0; accent-color: var(--fg); }
-.rangehead { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; font-weight: 500; }
-.rangehead output { font: 400 12.5px/1.6 var(--mono); color: var(--muted); }
-.drop { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 11px 13px; border: 1px dashed var(--muted); border-radius: 6px; font-size: 14px; }
-.drop.over { background: var(--idle-bg); border-style: solid; }
-.btn { padding: 10px 14px; font: 700 14px/1.2 var(--body); color: var(--fg); background: var(--surface); border: 1px solid var(--strong-line); border-radius: 6px; cursor: pointer; }
-.btn:hover:not(:disabled) { background: var(--idle-bg); }
-.btn:disabled, .btn.primary:disabled { opacity: .45; cursor: not-allowed; }
-.btn.primary { color: var(--accent-ink); background: var(--accent); border-color: var(--accent); font-size: 15px; }
-.btn.primary:hover:not(:disabled) { background: var(--accent-hover); }
-.btn.small { padding: 6px 10px; font-size: 13px; font-weight: 500; }
-details { font-size: 14px; }
-summary { cursor: pointer; font-weight: 500; }
-.encoded { margin: 8px 0 0; padding: 10px 12px; max-height: 160px; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; font: 400 12.5px/1.6 var(--mono); background: var(--surface); border: 1px solid var(--line); border-radius: 6px; }
-.stage { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 14px); display: grid; gap: 14px; min-width: 0; }
-.mat {
-  --c: 20px; padding: 34px 34px 18px; display: grid; gap: 18px; justify-items: center; color: var(--mat-ink); border-radius: 10px;
-  background-color: var(--mat);
-  background-image: linear-gradient(var(--mat-line-major) 1px, transparent 1px), linear-gradient(90deg, var(--mat-line-major) 1px, transparent 1px), linear-gradient(var(--mat-line) 1px, transparent 1px), linear-gradient(90deg, var(--mat-line) 1px, transparent 1px);
-  background-size: calc(var(--c) * 5) calc(var(--c) * 5), calc(var(--c) * 5) calc(var(--c) * 5), var(--c) var(--c), var(--c) var(--c);
-  background-position: -1px -1px;
-}
-.sticker { position: relative; width: 100%; max-width: 340px; min-width: 0; }
-.sticker .art { display: block; filter: drop-shadow(0 8px 14px var(--shadow)); }
-.sticker .art.see-through { background: repeating-conic-gradient(var(--check-a) 0 25%, var(--check-b) 0 50%) 0 0 / 18px 18px; }
-.sticker svg { display: block; width: 100%; height: auto; }
-.crop { position: absolute; width: 13px; height: 13px; border: 0 solid var(--mat-ink); pointer-events: none; }
-.crop.a { top: -11px; left: -11px; border-width: 1px 0 0 1px; }
-.crop.b { top: -11px; right: -11px; border-width: 1px 1px 0 0; }
-.crop.c { bottom: -11px; left: -11px; border-width: 0 0 1px 1px; }
-.crop.d { bottom: -11px; right: -11px; border-width: 0 1px 1px 0; }
-.empty { display: grid; place-items: center; aspect-ratio: 1; padding: 24px; text-align: center; color: var(--mat-ink); border: 1px dashed var(--mat-muted); border-radius: 6px; }
-.pill { display: inline-flex; align-items: center; gap: 7px; padding: 5px 12px; font-weight: 700; font-size: 13.5px; border-radius: 999px; background: var(--idle-bg); color: var(--idle-fg); }
-.pill[data-s=ok] { background: var(--ok-bg); color: var(--ok-fg); }
-.pill[data-s=warn] { background: var(--warn-bg); color: var(--warn-fg); }
-.pill[data-s=bad] { background: var(--bad-bg); color: var(--bad-fg); }
-.readout { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; width: 100%; margin: 0; }
-.readout div { min-width: 0; }
-.readout dt { font: 400 9.5px/1.4 var(--mono); letter-spacing: .05em; text-transform: uppercase; color: var(--mat-muted); }
-.readout dd { margin: 0; font: 600 12.5px/1.5 var(--mono); font-variant-numeric: tabular-nums; color: var(--mat-ink); }
+.opt > span { display: grid; justify-items: center; gap: 6px; padding: 10px 2px 8px; height: 100%; text-align: center; font-size: 12.5px; line-height: 1.2; color: var(--muted); background: var(--field); border: 1px solid var(--line); border-radius: 9px; transition: transform .18s, border-color .18s, color .18s, box-shadow .18s; }
+.opt svg { width: 100%; max-width: 28px; height: auto; display: block; }
+.opt:hover > span { transform: translateY(-2px); color: var(--fg); border-color: var(--line-strong); }
+.opt input:checked + span { color: var(--cyan); border-color: var(--cyan); box-shadow: 0 0 14px rgba(47, 230, 216, .25), inset 0 0 12px rgba(47, 230, 216, .08); }
+
+.colors { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.color { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 7px; }
+input[type=color] { width: 44px; height: 44px; padding: 3px; background: var(--field); border: 1px solid var(--line); border-radius: 10px; cursor: pointer; }
+.color input[type=text] { font: 400 14px/1.3 var(--mono); }
+.check { display: flex; gap: 9px; align-items: center; cursor: pointer; font-size: 14px; }
+.check input { width: 17px; height: 17px; margin: 0; accent-color: var(--cyan); }
+input[type=range] { width: 100%; margin: 0; accent-color: var(--cyan); }
+.rangehead { display: flex; justify-content: space-between; gap: 12px; font: 500 12px/1.5 var(--mono); letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
+.rangehead output { color: var(--cyan); text-transform: none; letter-spacing: 0; font-variant-numeric: tabular-nums; }
+.drop { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; font-size: 13px; color: var(--muted); padding: 2px; border-radius: 10px; transition: outline-color .15s; }
+.drop.over { outline: 2px dashed var(--cyan); outline-offset: 5px; }
+
+.btn { position: relative; overflow: hidden; padding: 13px 18px; font: 500 15px/1.2 var(--body); color: var(--fg); background: var(--field); border: 1px solid var(--line-strong); border-radius: 10px; cursor: pointer; transition: transform .15s, box-shadow .2s, border-color .2s; }
+.btn:hover:not(:disabled) { transform: translateY(-2px); border-color: var(--cyan); box-shadow: 0 0 18px rgba(47, 230, 216, .2); }
+.btn:active:not(:disabled) { transform: translateY(0) scale(.98); }
+.btn:disabled { opacity: .4; cursor: not-allowed; }
+.btn.primary { font-weight: 600; color: var(--ink); border: 0; background: linear-gradient(100deg, var(--cyan), var(--blue), var(--cyan)); background-size: 220% 100%; box-shadow: 0 6px 26px rgba(47, 180, 240, .3); animation: flow 7s linear infinite; }
+.btn.primary:hover:not(:disabled) { box-shadow: 0 8px 36px rgba(47, 230, 216, .5); }
+.btn.primary::after { content: ""; position: absolute; top: 0; bottom: 0; left: -40%; width: 30%; background: linear-gradient(100deg, transparent, rgba(255, 255, 255, .55), transparent); transform: skewX(-18deg); transition: left .55s ease; }
+.btn.primary:hover:not(:disabled)::after { left: 115%; }
+.btn.small { padding: 8px 12px; font-size: 13.5px; }
+.link { padding: 0; font: 400 13.5px/1.4 var(--body); color: var(--muted); background: none; border: 0; text-decoration: underline; cursor: pointer; }
+.link:hover { color: var(--cyan); }
+.tiny { font-size: 14px; }
+.tiny summary { cursor: pointer; color: var(--muted); }
+.tiny summary:hover { color: var(--fg); }
+.encoded { margin: 8px 0 0; padding: 10px 12px; max-height: 150px; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; font: 400 12.5px/1.6 var(--mono); color: var(--cyan); background: var(--field); border-radius: 9px; }
+.facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 16px; margin: 0; font: 400 13px/1.5 var(--mono); }
+.facts div { display: flex; justify-content: space-between; gap: 8px; min-width: 0; }
+.facts dt { color: var(--muted); }
+.facts dd { margin: 0; font-variant-numeric: tabular-nums; }
+
+.stage { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 20px); display: grid; gap: 12px; min-width: 0; }
+.plate { position: relative; display: grid; gap: 22px; justify-items: center; padding: 16px 34px 18px; background: var(--glass); border: 1px solid var(--line); border-radius: 18px; backdrop-filter: blur(12px); box-shadow: 0 24px 60px rgba(0, 0, 0, .45); overflow: hidden; }
+.plate::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0; background: radial-gradient(280px circle at var(--mx, 50%) var(--my, 50%), rgba(47, 230, 216, .13), transparent 70%); transition: opacity .25s; }
+.plate:hover::after { opacity: 1; }
+.hud { display: flex; justify-content: space-between; align-items: center; width: calc(100% + 36px); margin-inline: -18px; font: 400 11.5px/1.4 var(--mono); letter-spacing: .04em; color: var(--muted); }
+.live { display: inline-flex; align-items: center; gap: 7px; text-transform: uppercase; }
+.live i { width: 7px; height: 7px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 10px var(--cyan); animation: blink 1.8s ease-in-out infinite; }
+#spec { font-variant-numeric: tabular-nums; }
+.tilt { width: 100%; max-width: 300px; min-width: 0; transition: transform .18s ease-out; transform-style: preserve-3d; will-change: transform; }
+.sticker { position: relative; width: 100%; }
+.art { display: block; box-shadow: 0 16px 44px rgba(0, 0, 0, .5), 0 0 40px rgba(47, 200, 240, .14); }
+.art.see-through { background: repeating-conic-gradient(var(--check-a) 0 25%, var(--check-b) 0 50%) 0 0 / 18px 18px; }
+.art svg { display: block; width: 100%; height: auto; }
+#veil { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.scanbox { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.scanbox i { position: absolute; left: 0; right: 0; top: 0; height: 26%; opacity: 0; transform: translateY(-110%); border-bottom: 2px solid var(--cyan); background: linear-gradient(180deg, transparent, rgba(47, 230, 216, .34)); box-shadow: 0 6px 16px rgba(47, 230, 216, .55); }
+.scanbox.run i { animation: sweep .95s cubic-bezier(.45, .05, .55, .95); }
+.corner { position: absolute; width: 22px; height: 22px; border: 0 solid var(--muted); pointer-events: none; transition: inset .3s cubic-bezier(.2, .9, .3, 1.4), border-color .25s, filter .25s; }
+.corner.a { top: -16px; left: -16px; border-width: 2px 0 0 2px; border-top-left-radius: 7px; }
+.corner.b { top: -16px; right: -16px; border-width: 2px 2px 0 0; border-top-right-radius: 7px; }
+.corner.c { bottom: -16px; left: -16px; border-width: 0 0 2px 2px; border-bottom-left-radius: 7px; }
+.corner.d { bottom: -16px; right: -16px; border-width: 0 2px 2px 0; border-bottom-right-radius: 7px; }
+.sticker[data-s=ok] .corner { border-color: var(--ok); filter: drop-shadow(0 0 6px var(--ok)); }
+.sticker[data-s=ok] .corner.a { top: -10px; left: -10px; }
+.sticker[data-s=ok] .corner.b { top: -10px; right: -10px; }
+.sticker[data-s=ok] .corner.c { bottom: -10px; left: -10px; }
+.sticker[data-s=ok] .corner.d { bottom: -10px; right: -10px; }
+.sticker[data-s=warn] .corner { border-color: var(--warn); }
+.sticker[data-s=bad] .corner { border-color: var(--bad); filter: drop-shadow(0 0 6px var(--bad)); }
+.sticker[data-s=bad] { animation: shake .36s ease; }
+.empty { display: grid; place-items: center; aspect-ratio: 1; padding: 24px; text-align: center; color: var(--muted); border: 1px dashed var(--line-strong); border-radius: 8px; }
+.pill { display: inline-flex; align-items: center; gap: 7px; min-height: 22px; font: 500 13px/1.4 var(--mono); color: var(--muted); }
+.pill[data-s=ok] { color: var(--ok); }
+.pill[data-s=warn] { color: var(--warn); }
+.pill[data-s=bad] { color: var(--bad); }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .notes { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; font-size: 13.5px; }
-.notes li { padding: 8px 11px; border-radius: 6px; background: var(--warn-bg); color: var(--warn-fg); }
-.notes li.bad { background: var(--bad-bg); color: var(--bad-fg); }
-.savebar { display: grid; gap: 10px; }
-.saverow { display: grid; grid-template-columns: minmax(0, 1fr) 120px; gap: 10px; }
-.btnrow { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1.15fr) minmax(0, .85fr); gap: 8px; }
-.btnrow .btn { padding-inline: 8px; }
-#status { min-height: 1.5em; margin: 0; font-size: 13.5px; color: var(--muted); }
-#copyFallback { width: 100%; height: 100px; font: 400 11px/1.4 var(--mono); }
+.notes:empty { display: none; }
+.notes li { padding: 10px 13px; border-radius: 10px; color: var(--warn); background: var(--warn-bg); border: 1px solid rgba(255, 200, 87, .3); }
+.notes li.bad { color: #ffb4b4; background: var(--bad-bg); border-color: rgba(255, 107, 107, .4); }
+.btnrow { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }
+#status { margin: 0; font-size: 13.5px; color: var(--muted); }
+#status:empty { display: none; }
+#copyFallback { width: 100%; height: 90px; font: 400 11px/1.4 var(--mono); color: var(--fg); background: var(--field); }
+.saveopts { display: grid; gap: 12px; padding-top: 12px; }
+.saverow { display: grid; grid-template-columns: minmax(0, 1fr) 118px; gap: 10px; }
 .tip { margin: 0; font-size: 13px; color: var(--muted); }
-@media (max-width: 900px) {
+.rise { animation: rise .6s cubic-bezier(.2, .8, .3, 1) backwards; animation-delay: calc(var(--i, 0) * 70ms); }
+
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } }
+@keyframes sweep { 0% { opacity: 0; transform: translateY(-110%); } 12% { opacity: 1; } 88% { opacity: 1; } 100% { opacity: 0; transform: translateY(390%); } }
+@keyframes pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(.72); opacity: .75; } }
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
+@keyframes flow { to { background-position: -220% 0; } }
+@keyframes shake { 25% { transform: translateX(-5px); } 50% { transform: translateX(4px); } 75% { transform: translateX(-2px); } }
+@media (max-width: 820px) {
+  .wrap { padding-block: 22px 52px; }
+  header { margin-bottom: 20px; gap: 13px; }
+  .mark { width: 40px; height: 40px; border-width: 4px; }
+  .mark::after { inset: 6px; }
   .bench { grid-template-columns: minmax(0, 1fr); gap: 26px; }
   .stage { position: static; order: -1; }
-  .mat { padding: 28px 24px 16px; }
+  .tilt { max-width: 230px; }
 }
-@media (max-width: 480px) {
-  .opts.six { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .presets { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .readout { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .btnrow { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .btnrow .primary { grid-column: 1 / -1; }
-}
-@media (prefers-reduced-motion: no-preference) { .opt > span, .btn, .preset { transition: background-color .12s, border-color .12s; } }
+@media (max-width: 480px) { .opts.six { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 </style>
 </head>
 <body>
+<canvas id="field" aria-hidden="true"></canvas>
 <div class="wrap">
-  <header>
-    <h1>Quiet Zone</h1>
-    <p class="lede">Free QR codes, styled your way. No sign-up, no watermark and no expiry date. Your details stay in this browser, and each code holds your content directly, so it keeps working without this site.</p>
+  <header class="rise">
+    <span class="mark" aria-hidden="true"></span>
+    <div>
+      <h1 id="brand" aria-label="Quiet Zone">Quiet Zone</h1>
+      <p class="lede">Free QR codes. No sign-up, no watermark, no expiry.</p>
+    </div>
   </header>
 
   <main class="bench">
     <form class="controls" id="form" autocomplete="off">
-      <section class="group">
-        <h2>What it opens</h2>
-        <div class="opts tabs" id="types" role="radiogroup" aria-label="Type of content"></div>
+      <div class="block rise" style="--i:1">
+        <label class="lab" for="type">What should it open?</label>
+        <select id="type" data-k="type"></select>
         <div id="typeFields"></div>
-        <details>
-          <summary>See the exact text inside the code</summary>
-          <pre class="encoded" id="encoded"></pre>
-        </details>
-      </section>
+      </div>
 
-      <section class="group">
-        <h2>Starting styles</h2>
-        <p class="sub">Pick one, then change anything below.</p>
+      <div class="block rise" style="--i:2">
+        <span class="lab">Style</span>
         <div class="presets" id="presets"></div>
-      </section>
+      </div>
 
-      <section class="group">
-        <h2>Shape</h2>
-        <fieldset><legend>Modules (the small squares)</legend><div class="opts six" id="moduleOpts"></div></fieldset>
-        <fieldset><legend>Eye frame (the three corner squares)</legend><div class="opts four" id="frameOpts"></div></fieldset>
-        <fieldset><legend>Eye centre</legend><div class="opts four" id="ballOpts"></div></fieldset>
-      </section>
+      <div class="more rise" style="--i:3">
+        <details class="sect" name="custom">
+          <summary>Colours</summary>
+          <div class="sect-body">
+            <div class="colors">
+              <div class="field"><label class="lab" for="fgHex">Code</label><div class="color"><input type="color" id="fgPick" aria-label="Pick code colour"><input type="text" id="fgHex" spellcheck="false" maxlength="7"></div></div>
+              <div class="field"><label class="lab" for="bgHex">Background</label><div class="color"><input type="color" id="bgPick" aria-label="Pick background colour"><input type="text" id="bgHex" spellcheck="false" maxlength="7"></div></div>
+            </div>
+            <label class="check"><input type="checkbox" id="transparent" data-k="transparent"> Transparent background</label>
+            <div class="field"><label class="lab" for="gradient">Gradient</label>
+              <select id="gradient" data-k="gradient"><option value="none">None</option><option value="vertical">Top to bottom</option><option value="horizontal">Left to right</option><option value="diagonal">Diagonal</option><option value="radial">From the centre</option></select></div>
+            <div class="field" id="fg2Wrap"><label class="lab" for="fg2Hex">Gradient end</label><div class="color"><input type="color" id="fg2Pick" aria-label="Pick gradient end colour"><input type="text" id="fg2Hex" spellcheck="false" maxlength="7"></div></div>
+            <label class="check"><input type="checkbox" id="eyeCustom" data-k="eyeCustom"> Different colour for the corner squares</label>
+            <div class="field" id="eyeWrap"><label class="lab" for="eyeHex">Corner colour</label><div class="color"><input type="color" id="eyePick" aria-label="Pick corner colour"><input type="text" id="eyeHex" spellcheck="false" maxlength="7"></div></div>
+          </div>
+        </details>
 
-      <section class="group">
-        <h2>Colour</h2>
-        <div class="colors">
-          <div class="field"><label class="lab" for="fgHex">Code</label><div class="color"><input type="color" id="fgPick" aria-label="Pick code colour"><input type="text" id="fgHex" spellcheck="false" maxlength="7"></div></div>
-          <div class="field"><label class="lab" for="bgHex">Background</label><div class="color"><input type="color" id="bgPick" aria-label="Pick background colour"><input type="text" id="bgHex" spellcheck="false" maxlength="7"></div></div>
-        </div>
-        <div class="fields">
-          <div class="field"><label class="lab" for="gradient">Gradient</label>
-            <select id="gradient" data-k="gradient"><option value="none">None</option><option value="vertical">Top to bottom</option><option value="horizontal">Left to right</option><option value="diagonal">Diagonal</option><option value="radial">From the centre</option></select></div>
-          <div class="field" id="fg2Wrap"><label class="lab" for="fg2Hex">Gradient end</label><div class="color"><input type="color" id="fg2Pick" aria-label="Pick gradient end colour"><input type="text" id="fg2Hex" spellcheck="false" maxlength="7"></div></div>
-        </div>
-        <label class="check"><input type="checkbox" id="eyeCustom" data-k="eyeCustom"> Give the eyes their own colour</label>
-        <div class="field" id="eyeWrap"><label class="lab" for="eyeHex">Eye colour</label><div class="color" style="max-width:220px"><input type="color" id="eyePick" aria-label="Pick eye colour"><input type="text" id="eyeHex" spellcheck="false" maxlength="7"></div></div>
-        <label class="check"><input type="checkbox" id="transparent" data-k="transparent"> Transparent background</label>
-        <div class="field"><div class="rangehead"><label for="radius">Rounded corners</label><output id="radiusOut"></output></div><input type="range" id="radius" data-k="radius" min="0" max="12" step="1"></div>
-      </section>
+        <details class="sect" name="custom">
+          <summary>Shape</summary>
+          <div class="sect-body">
+            <fieldset><legend>Dots</legend><div class="opts six" id="moduleOpts"></div></fieldset>
+            <fieldset><legend>Corner squares</legend><div class="opts four" id="frameOpts"></div></fieldset>
+            <fieldset><legend>Corner centres</legend><div class="opts four" id="ballOpts"></div></fieldset>
+            <div class="field"><div class="rangehead"><label for="radius">Rounded edges</label><output id="radiusOut"></output></div><input type="range" id="radius" data-k="radius" min="0" max="12" step="1"></div>
+          </div>
+        </details>
 
-      <section class="group">
-        <h2>Logo</h2>
-        <p class="sub">Adding a logo switches error correction to H, the level that recovers the most damage.</p>
-        <div class="opts six" id="logoOpts"></div>
-        <div class="drop" id="drop">
-          <input type="file" id="logoFile" accept="image/png,image/jpeg,image/webp,image/svg+xml" hidden>
-          <button type="button" class="btn small" id="logoBtn">Upload your logo</button>
-          <span id="logoName" class="hint">PNG, JPG, WebP or SVG. You can also drop a file here.</span>
-        </div>
-        <div class="field" id="logoSizeWrap"><div class="rangehead"><label for="logoSize">Logo size</label><output id="logoSizeOut"></output></div><input type="range" id="logoSize" data-k="logoSize" min="10" max="32" step="1"></div>
-      </section>
+        <details class="sect" name="custom">
+          <summary>Logo</summary>
+          <div class="sect-body">
+            <div class="opts six" id="logoOpts"></div>
+            <div class="drop" id="drop">
+              <input type="file" id="logoFile" accept="image/png,image/jpeg,image/webp,image/svg+xml" hidden>
+              <button type="button" class="btn small" id="logoBtn">Upload your logo</button>
+              <span id="logoName">PNG, JPG, WebP or SVG</span>
+            </div>
+            <div class="field" id="logoSizeWrap"><div class="rangehead"><label for="logoSize">Logo size</label><output id="logoSizeOut"></output></div><input type="range" id="logoSize" data-k="logoSize" min="10" max="32" step="1"></div>
+          </div>
+        </details>
 
-      <section class="group">
-        <h2>Label</h2>
-        <div class="opts three" id="labelOpts"></div>
-        <div class="field" id="captionWrap"><label class="lab" for="caption">Label text</label><input type="text" id="caption" data-k="caption" maxlength="32"></div>
-      </section>
+        <details class="sect" name="custom">
+          <summary>Label</summary>
+          <div class="sect-body">
+            <div class="opts three" id="labelOpts"></div>
+            <div class="field" id="captionWrap"><label class="lab" for="caption">Label text</label><input type="text" id="caption" data-k="caption" maxlength="32"></div>
+          </div>
+        </details>
 
-      <section class="group">
-        <h2>Fine tuning</h2>
-        <fieldset><legend>Error correction</legend><div class="opts four" id="ecOpts"></div></fieldset>
-        <div class="field"><div class="rangehead"><label for="quiet">Quiet zone (blank border)</label><output id="quietOut"></output></div><input type="range" id="quiet" data-k="quiet" min="0" max="8" step="1"><small>The QR standard asks for 4 modules so scanners can find the code's edge.</small></div>
-        <div><button type="button" class="btn small" id="reset">Reset all styling</button></div>
-      </section>
+        <details class="sect" name="custom">
+          <summary>Advanced</summary>
+          <div class="sect-body">
+            <fieldset><legend>Damage it can recover from</legend><div class="opts four" id="ecOpts"></div></fieldset>
+            <div class="field"><div class="rangehead"><label for="quiet">Blank border</label><output id="quietOut"></output></div><input type="range" id="quiet" data-k="quiet" min="0" max="8" step="1"><small>4 is the standard, and helps scanners find the code.</small></div>
+            <dl class="facts">
+              <div><dt>Version</dt><dd id="rVersion">–</dd></div>
+              <div><dt>Grid</dt><dd id="rModules">–</dd></div>
+              <div><dt>Recovers</dt><dd id="rEc">–</dd></div>
+              <div><dt>Min print</dt><dd id="rPrint">–</dd></div>
+            </dl>
+            <details class="tiny">
+              <summary>Text inside the code</summary>
+              <pre class="encoded" id="encoded"></pre>
+            </details>
+            <div><button type="button" class="link" id="reset">Reset all styling</button></div>
+          </div>
+        </details>
+      </div>
     </form>
 
-    <aside class="stage" aria-label="Your QR code">
-      <div class="mat">
-        <div class="sticker">
-          <span class="crop a"></span><span class="crop b"></span><span class="crop c"></span><span class="crop d"></span>
-          <div class="art" id="art" role="img" aria-label="QR code preview"></div>
+    <aside class="stage rise" style="--i:2" aria-label="Your QR code">
+      <div class="plate" id="plate">
+        <div class="hud"><span class="live"><i></i>Live preview</span><span id="spec">–</span></div>
+        <div class="tilt" id="tilt">
+          <div class="sticker" id="sticker" data-s="idle">
+            <div class="art" id="art" role="img" aria-label="QR code preview"></div>
+            <canvas id="veil" aria-hidden="true"></canvas>
+            <div class="scanbox" id="scanbox"><i></i></div>
+            <span class="corner a"></span><span class="corner b"></span><span class="corner c"></span><span class="corner d"></span>
+          </div>
         </div>
-        <span class="pill" id="pill" data-s="idle" role="status"><span id="pillIcon" aria-hidden="true">…</span><span id="pillText">Checking</span></span>
-        <dl class="readout">
-          <div><dt>Version</dt><dd id="rVersion">–</dd></div>
-          <div><dt>Modules</dt><dd id="rModules">–</dd></div>
-          <div><dt>Repairs</dt><dd id="rEc">–</dd></div>
-          <div><dt>Min print</dt><dd id="rPrint">–</dd></div>
-        </dl>
+        <span class="pill" id="pill" data-s="idle"><span id="pillIcon" aria-hidden="true">…</span><span id="pillFx" aria-hidden="true">Checking</span><span class="sr" id="pillText" role="status">Checking</span></span>
       </div>
       <ul class="notes" id="notes"></ul>
-      <div class="savebar">
-        <div class="saverow">
-          <div class="field"><label class="lab" for="filename">File name</label><input type="text" id="filename" data-k="filename" maxlength="80"></div>
-          <div class="field"><label class="lab" for="pngSize">PNG width</label><select id="pngSize" data-k="pngSize"><option value="512">512 px</option><option value="1024">1024 px</option><option value="2048">2048 px</option><option value="4096">4096 px</option></select></div>
-        </div>
-        <div class="btnrow">
-          <button type="button" class="btn primary" id="savePng">Download PNG</button>
-          <button type="button" class="btn" id="saveSvg">Download SVG</button>
-          <button type="button" class="btn" id="copySvg">Copy SVG</button>
-        </div>
-        <p id="status" aria-live="polite"></p>
-        <textarea id="copyFallback" aria-label="SVG code to copy" readonly hidden></textarea>
-        <p class="tip">SVG stays sharp at any size, so use it for print. The scan test uses a software reader, so try the final code on a real phone before you print a large run.</p>
+      <div class="btnrow">
+        <button type="button" class="btn primary" id="savePng">Download PNG</button>
+        <button type="button" class="btn spot" id="saveSvg">SVG</button>
       </div>
+      <p id="status" aria-live="polite"></p>
+      <textarea id="copyFallback" aria-label="SVG code to copy" readonly hidden></textarea>
+      <details class="tiny">
+        <summary>Download options</summary>
+        <div class="saveopts">
+          <div class="saverow">
+            <div class="field"><label class="lab" for="filename">File name</label><input type="text" id="filename" data-k="filename" maxlength="80"></div>
+            <div class="field"><label class="lab" for="pngSize">PNG width</label><select id="pngSize" data-k="pngSize"><option value="512">512 px</option><option value="1024">1024 px</option><option value="2048">2048 px</option><option value="4096">4096 px</option></select></div>
+          </div>
+          <div><button type="button" class="btn small spot" id="copySvg">Copy SVG code</button></div>
+          <p class="tip">SVG stays sharp at any size, so it's best for print. Test on a real phone before printing a large run.</p>
+        </div>
+      </details>
     </aside>
   </main>
 </div>
@@ -257,31 +320,184 @@ summary { cursor: pointer; font-weight: 500; }
 <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 <script>
 "use strict";
+/* Visual effects only. Nothing here touches the QR data or the exported files. */
+const FX = (() => {
+  const calm = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const byId = id => document.getElementById(id);
+  const sticker = byId("sticker"), scanbox = byId("scanbox"), veilEl = byId("veil"), pillFx = byId("pillFx");
+
+  /* Text that decodes itself into place */
+  const GLYPHS = "01#/\\_<>{}=+*";
+  const jobs = new WeakMap();
+  function scramble(el, text, ms) {
+    if (calm) { el.textContent = text; return; }
+    const id = (jobs.get(el) || 0) + 1; jobs.set(el, id);
+    const start = performance.now();
+    (function tick(now) {
+      if (jobs.get(el) !== id) return;
+      const p = Math.min(1, (now - start) / ms), solved = Math.floor(p * text.length);
+      let out = text.slice(0, solved);
+      for (let i = solved; i < text.length; i++) out += text[i] === " " ? " " : GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
+      el.textContent = out;
+      if (p < 1) requestAnimationFrame(tick); else el.textContent = text;
+    })(start);
+  }
+  function status(state, text) {
+    sticker.dataset.s = state;
+    if (pillFx.dataset.t !== text) { pillFx.dataset.t = text; scramble(pillFx, text, 280); }
+  }
+
+  /* Scanner sweep over the code */
+  function sweep() {
+    if (calm) return;
+    scanbox.classList.remove("run"); void scanbox.offsetWidth; scanbox.classList.add("run");
+  }
+
+  /* The code builds itself tile by tile */
+  let veilJob = 0;
+  function veil(cols, rows, coverage, ms) {
+    if (calm) return;
+    const w = veilEl.offsetWidth, h = veilEl.offsetHeight;
+    if (!w || !h) return;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2), step = Math.max(1, Math.ceil(Math.max(cols, rows) / 64));
+    const nx = Math.ceil(cols / step), ny = Math.ceil(rows / step), cw = w / nx, ch = h / ny;
+    veilEl.width = Math.round(w * dpr); veilEl.height = Math.round(h * dpr);
+    const g = veilEl.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const cells = [];
+    for (let y = 0; y < ny; y++) for (let x = 0; x < nx; x++) if (Math.random() < coverage) cells.push({ x, y, at: Math.random() * ms * .78 });
+    const job = ++veilJob, life = ms * .22, start = performance.now();
+    (function frame(now) {
+      if (job !== veilJob) return;
+      const t = now - start;
+      g.clearRect(0, 0, w, h);
+      if (t >= ms) return;
+      for (const c of cells) {
+        if (t < c.at) g.fillStyle = "#0b1a2e";
+        else if (t < c.at + life) g.fillStyle = "rgba(47,230,216," + (1 - (t - c.at) / life).toFixed(2) + ")";
+        else continue;
+        g.fillRect(c.x * cw, c.y * ch, Math.ceil(cw), Math.ceil(ch));
+      }
+      requestAnimationFrame(frame);
+    })(start);
+  }
+  let lastKey = null, armed = true;
+  function armFull() { armed = true; }
+  function code(key, cols, rows) {
+    if (armed) veil(cols, rows, 1, lastKey === null ? 900 : 560);
+    else if (key !== lastKey) veil(cols, rows, .24, 300);
+    armed = false; lastKey = key;
+    sweep();
+  }
+
+  /* Live field of QR modules behind the page */
+  const canvas = byId("field"), ctx = canvas.getContext("2d");
+  const CELL = 26, pointer = { x: -999, y: -999, seen: 0 };
+  let W = 0, H = 0, lit = [], ripples = [], bits = [];
+  function hash(i, j) { const s = Math.sin(i * 127.1 + j * 311.7) * 43758.5453; return s - Math.floor(s); }
+  function size() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth; H = window.innerHeight;
+    canvas.width = W * dpr; canvas.height = H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    lit = [];
+    for (let j = 0; j * CELL < H + CELL; j++) for (let i = 0; i * CELL < W + CELL; i++) if (hash(i, j) > .58) lit.push({ x: i * CELL + CELL / 2, y: j * CELL + CELL / 2, n: hash(j, i) });
+    if (calm) draw(0);
+  }
+  function draw(now) {
+    ctx.clearRect(0, 0, W, H);
+    const wave = (now / 9000 % 1) * (H + 500) - 250;
+    for (const c of lit) {
+      let a = .035 + c.n * .03, s = 6;
+      const twinkle = Math.sin(now / 1400 + c.n * 40);
+      if (twinkle > .93) a += .1;
+      if (!calm) {
+        const dw = Math.abs(c.y - wave);
+        if (dw < 90) a += (1 - dw / 90) * .13;
+        const dx = c.x - pointer.x, dy = c.y - pointer.y, dist = Math.hypot(dx, dy);
+        if (dist < 190) { const k = 1 - dist / 190; a += k * k * .62; s += k * 9; }
+        for (const r of ripples) { const d = Math.abs(Math.hypot(c.x - r.x, c.y - r.y) - r.r); if (d < 34) { const k = (1 - d / 34) * r.a; a += k * .6; s += k * 6; } }
+      }
+      ctx.fillStyle = "rgba(47,230,216," + Math.min(a, .85).toFixed(3) + ")";
+      ctx.fillRect(c.x - s / 2, c.y - s / 2, s, s);
+    }
+    for (const b of bits) { ctx.fillStyle = "rgba(47,230,216," + b.a.toFixed(2) + ")"; ctx.fillRect(b.x, b.y, b.s, b.s); }
+  }
+  let last = 0, flip = false;
+  function loop(now) {
+    requestAnimationFrame(loop);
+    const dt = Math.min(50, now - last); last = now;
+    const busy = ripples.length || bits.length || now - pointer.seen < 1500;
+    flip = !flip;
+    if (!busy && flip) return; // half rate when nothing is moving, to save battery
+    ripples = ripples.filter(r => (r.r += dt * .55, r.a -= dt * .0011, r.a > 0));
+    bits = bits.filter(b => (b.x += b.vx * dt, b.y += b.vy * dt, b.vy += dt * .0009, b.a -= dt * .0013, b.a > 0));
+    draw(now);
+  }
+  function burst(x, y) {
+    if (calm) return;
+    if (x === undefined) { x = pointer.x; y = pointer.y; }
+    ripples.push({ x, y, r: 0, a: 1 });
+    for (let i = 0; i < 34; i++) { const t = Math.random() * Math.PI * 2, v = .12 + Math.random() * .42; bits.push({ x, y, vx: Math.cos(t) * v, vy: Math.sin(t) * v - .12, s: 3 + Math.random() * 6, a: 1 }); }
+  }
+
+  window.addEventListener("resize", size);
+  size();
+  if (!calm) {
+    requestAnimationFrame(loop);
+    window.addEventListener("pointermove", e => { pointer.x = e.clientX; pointer.y = e.clientY; pointer.seen = performance.now(); }, { passive: true });
+    window.addEventListener("pointerdown", e => { pointer.x = e.clientX; pointer.y = e.clientY; pointer.seen = performance.now(); ripples.push({ x: e.clientX, y: e.clientY, r: 0, a: .8 }); }, { passive: true });
+
+    /* Spotlight that follows the pointer on interactive surfaces */
+    document.addEventListener("pointermove", e => {
+      const t = e.target.closest && e.target.closest(".spot, .plate");
+      if (!t) return;
+      const r = t.getBoundingClientRect();
+      t.style.setProperty("--mx", (e.clientX - r.left) + "px"); t.style.setProperty("--my", (e.clientY - r.top) + "px");
+    }, { passive: true });
+
+    /* 3D tilt on the preview, mouse only so touch scrolling stays steady */
+    const plate = byId("plate"), tilt = byId("tilt");
+    plate.addEventListener("pointermove", e => {
+      if (e.pointerType !== "mouse") return;
+      const r = plate.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
+      tilt.style.transform = "perspective(800px) rotateX(" + (-y * 12).toFixed(2) + "deg) rotateY(" + (x * 12).toFixed(2) + "deg) scale(1.02)";
+    });
+    plate.addEventListener("pointerleave", () => { tilt.style.transform = ""; });
+
+    const brand = byId("brand");
+    scramble(brand, "Quiet Zone", 800);
+    brand.addEventListener("pointerenter", () => scramble(brand, "Quiet Zone", 500));
+  }
+  return { status, code, armFull, burst, sweep };
+})();
+</script>
+<script>
+"use strict";
 const $ = id => document.getElementById(id);
 const EC_REPAIR = { L: 7, M: 15, Q: 25, H: 30 };
 const STYLE_DEFAULTS = {
-  module: "connected", eyeFrame: "rounded", eyeBall: "rounded", fg: "#10394f", fg2: "#0f7a6c", gradient: "diagonal",
-  eyeCustom: false, eyeColor: "#10394f", bg: "#ffffff", transparent: false, radius: 3,
-  logoKind: "none", logoSize: 22, frame: "banner", caption: "SCAN ME", ec: "Q", quiet: 4
+  module: "square", eyeFrame: "square", eyeBall: "square", fg: "#000000", fg2: "#000000", gradient: "none",
+  eyeCustom: false, eyeColor: "#000000", bg: "#ffffff", transparent: false, radius: 0,
+  logoKind: "none", logoSize: 22, frame: "none", caption: "Scan me", ec: "M", quiet: 4
 };
 const state = Object.assign({ type: "link", pngSize: "1024", filename: "qr-code", logoData: null, logoRatio: 1 }, STYLE_DEFAULTS);
-const STYLE_KEY = "quiet-zone-style";
+const STYLE_KEY = "quiet-zone-style-2";
 
 const TYPES = {
-  link: { label: "Link", fields: [{ id: "url", label: "Web address", type: "url", wide: true, value: "https://example.com/menu", ph: "https://yourwebsite.com", hint: "This is an example link. Replace it with your own." }] },
-  text: { label: "Text", fields: [{ id: "text", label: "Your text", area: true, wide: true, ph: "Anything you want people to read" }] },
-  wifi: { label: "Wi-Fi", fields: [
+  link: { label: "A website link", fields: [{ id: "url", label: "Web address", type: "url", wide: true, value: "https://example.com/menu", ph: "https://yourwebsite.com", hint: "This is an example. Replace it with your link." }] },
+  text: { label: "Plain text", fields: [{ id: "text", label: "Your text", area: true, wide: true, ph: "Anything you want people to read" }] },
+  wifi: { label: "Wi-Fi network", fields: [
     { id: "ssid", label: "Network name", ph: "Cafe Guest" }, { id: "pass", label: "Password", type: "password", ph: "Leave empty for open networks" },
     { id: "sec", label: "Security", options: [["WPA", "WPA / WPA2 / WPA3"], ["WEP", "WEP"], ["nopass", "None"]] },
     { id: "hidden", label: "Hidden network", check: true }] },
-  contact: { label: "Contact", fields: [
+  contact: { label: "Contact card", fields: [
     { id: "first", label: "First name" }, { id: "last", label: "Last name" }, { id: "org", label: "Company" }, { id: "title", label: "Job title" },
     { id: "cphone", label: "Phone", type: "tel" }, { id: "cemail", label: "Email", type: "email" }, { id: "site", label: "Website", type: "url" }, { id: "addr", label: "Address" }] },
   email: { label: "Email", fields: [{ id: "to", label: "Send to", type: "email", wide: true, ph: "hello@yourwebsite.com" }, { id: "subject", label: "Subject", wide: true }, { id: "body", label: "Message", area: true, wide: true }] },
-  phone: { label: "Call", fields: [{ id: "tel", label: "Phone number", type: "tel", wide: true, ph: "+44 20 7946 0000" }] },
-  sms: { label: "SMS", fields: [{ id: "smsTo", label: "Phone number", type: "tel", wide: true, ph: "+44 7700 900000" }, { id: "smsBody", label: "Message", area: true, wide: true }] },
-  place: { label: "Location", fields: [{ id: "lat", label: "Latitude", type: "number", ph: "51.5074", step: "any" }, { id: "lng", label: "Longitude", type: "number", ph: "-0.1278", step: "any" }] },
-  event: { label: "Event", fields: [{ id: "evName", label: "Event name", wide: true }, { id: "evStart", label: "Starts", type: "datetime-local" }, { id: "evEnd", label: "Ends", type: "datetime-local" }, { id: "evPlace", label: "Place", wide: true }] }
+  phone: { label: "Phone call", fields: [{ id: "tel", label: "Phone number", type: "tel", wide: true, ph: "+44 20 7946 0000" }] },
+  sms: { label: "Text message", fields: [{ id: "smsTo", label: "Phone number", type: "tel", wide: true, ph: "+44 7700 900000" }, { id: "smsBody", label: "Message", area: true, wide: true }] },
+  place: { label: "Map location", fields: [{ id: "lat", label: "Latitude", type: "number", ph: "51.5074", step: "any" }, { id: "lng", label: "Longitude", type: "number", ph: "-0.1278", step: "any" }] },
+  event: { label: "Calendar event", fields: [{ id: "evName", label: "Event name", wide: true }, { id: "evStart", label: "Starts", type: "datetime-local" }, { id: "evEnd", label: "Ends", type: "datetime-local" }, { id: "evPlace", label: "Place", wide: true }] }
 };
 const val = id => { const el = $("f_" + id); if (!el) return ""; return el.type === "checkbox" ? el.checked : el.value.trim(); };
 const wifiEsc = s => s.replace(/([\\;,:"])/g, "\\$1");
@@ -492,7 +708,7 @@ async function scanTest(text, m, s) {
   }
   if (hasJsQR) {
     const want = new TextEncoder().encode(text);
-    for (const perModule of [4, 6, 12]) {
+    for (const perModule of [4, 6, 12, 3, 5, 7, 10, 14, 16, 20]) {
       const c = await drawAt(m, s, perModule);
       const d = c.getContext("2d").getImageData(0, 0, c.width, c.height);
       const code = jsQR(d.data, c.width, c.height, { inversionAttempts: "attemptBoth" });
@@ -504,13 +720,13 @@ async function scanTest(text, m, s) {
 
 /* ---------- Page wiring ---------- */
 let current = null, scanTimer = 0, scanToken = 0;
-function setPill(s, icon, text) { const p = $("pill"); p.dataset.s = s; $("pillIcon").textContent = icon; $("pillText").textContent = text; }
+function setPill(s, icon, text) { const p = $("pill"); p.dataset.s = s; $("pillIcon").textContent = icon; $("pillText").textContent = text; FX.status(s, text); }
 function setNotes(list) {
   const ul = $("notes"); ul.textContent = "";
   list.forEach(n => { const li = document.createElement("li"); li.textContent = n.text; if (n.bad) li.className = "bad"; ul.appendChild(li); });
 }
 function setSaving(on) { ["savePng", "saveSvg", "copySvg"].forEach(i => $(i).disabled = !on); }
-function clearReadout() { ["rVersion", "rModules", "rEc", "rPrint"].forEach(i => $(i).textContent = "–"); }
+function clearReadout() { ["rVersion", "rModules", "rEc", "rPrint", "spec"].forEach(i => $(i).textContent = "–"); }
 function showEmpty(msg) {
   const a = $("art"); a.classList.remove("see-through"); a.innerHTML = "";
   const d = document.createElement("div"); d.className = "empty"; d.textContent = msg; a.appendChild(d);
@@ -525,19 +741,26 @@ function styleNotes(out, m) {
     else if (low < 3) notes.push({ text: `The contrast between code and background is low (${low.toFixed(1)}:1). Aim for at least 4:1.` });
     if (luminance(state.fg) > luminance(state.bg)) notes.push({ text: "This is a light code on a dark background. Some scanner apps can't read inverted codes, so test it on several phones." });
   } else notes.push({ text: "With a transparent background, place the code on a plain, light surface." });
-  if (+state.quiet < 2) notes.push({ text: "The quiet zone is very small. Leave blank space around the code wherever you place it." });
+  if (+state.quiet < 2) notes.push({ text: "The blank border is very small. Leave blank space around the code wherever you place it." });
   if (out.removed && out.dark) {
     const pct = Math.round(out.removed / out.dark * 100), rep = EC_REPAIR[state.ec];
-    if (pct > rep * .75) notes.push({ text: `The logo hides about ${pct}% of the data modules, and level ${state.ec} repairs up to ${rep}% of damage. Make the logo smaller${state.ec === "H" ? "" : " or use level H"}.` });
+    if (pct > rep * .75) notes.push({ text: `The logo hides about ${pct}% of the code, and this setting recovers up to ${rep}%. Make the logo smaller${state.ec === "H" ? "" : " or set recovery to Max under Advanced"}.` });
   }
   if ((m.n - 17) / 4 > 15) notes.push({ text: "This code is dense because it holds a lot of text. Print it larger, or shorten the content." });
   return notes;
 }
+function markPreset() {
+  document.querySelectorAll(".preset").forEach((b, i) => {
+    const { name, ...style } = PRESETS[i];
+    b.classList.toggle("on", Object.keys(style).every(k => state[k] === style[k]));
+  });
+}
 function render() {
+  markPreset();
   const text = payload();
   $("encoded").textContent = text || "Nothing yet. Fill in the fields above.";
   $("logoSizeOut").textContent = state.logoSize + "% of the code";
-  $("quietOut").textContent = state.quiet + (+state.quiet === 1 ? " module" : " modules");
+  $("quietOut").textContent = state.quiet + (+state.quiet === 1 ? " unit" : " units");
   $("radiusOut").textContent = state.radius + "%";
   $("fg2Wrap").hidden = state.gradient === "none";
   $("eyeWrap").hidden = !state.eyeCustom;
@@ -552,12 +775,13 @@ function render() {
   catch (e) {
     showEmpty("That's too much content for one code at this level.");
     setPill("bad", "×", "Too long");
-    setNotes([{ bad: true, text: state.ec === "L" ? "Shorten the content. A single code holds at most about 2,900 bytes." : `Shorten the content or lower error correction from ${state.ec}.` }]);
+    setNotes([{ bad: true, text: state.ec === "L" ? "Shorten the content. A single code holds at most about 2,900 bytes." : "Shorten the content, or lower the recovery level under Advanced." }]);
     return;
   }
   const s = Object.assign({}, state), out = buildSvg(m, s);
   const art = $("art"); art.innerHTML = out.svg; art.classList.toggle("see-through", !!s.transparent);
   art.setAttribute("aria-label", "QR code for: " + text.slice(0, 120));
+  FX.code(state.ec + "|" + text, out.W, out.H);
   current = { text, m, s, W: out.W, H: out.H };
   setSaving(true);
   const units = m.n + 2 * +s.quiet;
@@ -565,17 +789,18 @@ function render() {
   $("rModules").textContent = m.n + "×" + m.n;
   $("rEc").textContent = "≤" + EC_REPAIR[s.ec] + "%";
   $("rPrint").textContent = (units * .04).toFixed(1) + " cm";
+  $("spec").textContent = m.n + "×" + m.n + " · V" + (m.n - 17) / 4;
   const notes = styleNotes(out, m);
   setNotes(notes);
-  setPill("idle", "…", "Testing scan");
+  setPill("idle", "…", "Testing…");
   const token = scanToken;
   scanTimer = setTimeout(async () => {
     let r;
     try { r = await scanTest(text, m, s); } catch (e) { r = "unavailable"; }
     if (token !== scanToken) return;
     if (notes.some(n => n.blocks)) setPill("bad", "×", "Contrast too low");
-    else if (r === "pass") setPill(notes.length ? "warn" : "ok", notes.length ? "!" : "✓", notes.length ? "Scan test passed, see notes" : "Scan test passed");
-    else if (r === "fail") { setPill("bad", "×", "Scan test failed"); setNotes([{ bad: true, text: "The test reader couldn't read this design. Try more contrast, a simpler module shape, a smaller logo or higher error correction." }].concat(notes)); }
+    else if (r === "pass") setPill(notes.length ? "warn" : "ok", notes.length ? "!" : "✓", notes.length ? "Scans, but see the note" : "Ready to scan");
+    else if (r === "fail") { setPill("bad", "×", "Won't scan"); setNotes([{ bad: true, text: "The test reader couldn't read this design. Try more contrast, a simpler shape or a smaller logo." }].concat(notes)); }
     else setPill("idle", "?", "Scan test unavailable");
   }, 220);
   saveStyle();
@@ -611,12 +836,12 @@ const iconSwatch = k => k === "none"
 [["square", "Square"], ["rounded", "Rounded"], ["circle", "Circle"], ["leaf", "Leaf"]].forEach(([v, l]) => tile("eyeFrame", v, l, frameSwatch(v), $("frameOpts")));
 [["square", "Square"], ["rounded", "Rounded"], ["circle", "Circle"], ["diamond", "Diamond"]].forEach(([v, l]) => tile("eyeBall", v, l, ballSwatch(v), $("ballOpts")));
 [["none", "None"], ["wifi", "Wi-Fi"], ["link", "Link"], ["mail", "Mail"], ["phone", "Phone"], ["pin", "Pin"]].forEach(([v, l]) => tile("logoKind", v, l, iconSwatch(v), $("logoOpts")));
-[["none", "No label"], ["text", "Text below"], ["banner", "Banner"]].forEach(([v, l]) => tile("frame", v, l, "", $("labelOpts")));
-[["L", "L · 7%"], ["M", "M · 15%"], ["Q", "Q · 25%"], ["H", "H · 30%"]].forEach(([v, l]) => tile("ec", v, l, "", $("ecOpts")));
+[["none", "None"], ["text", "Text"], ["banner", "Banner"]].forEach(([v, l]) => tile("frame", v, l, "", $("labelOpts")));
+[["L", "Low 7%"], ["M", "Medium 15%"], ["Q", "High 25%"], ["H", "Max 30%"]].forEach(([v, l]) => tile("ec", v, l, "", $("ecOpts")));
 
 /* Content fields */
 Object.keys(TYPES).forEach(k => {
-  tile("type", k, TYPES[k].label, "", $("types"));
+  const typeOption = document.createElement("option"); typeOption.value = k; typeOption.textContent = TYPES[k].label; $("type").appendChild(typeOption);
   const panel = document.createElement("div"); panel.className = "fields"; panel.id = "panel_" + k; panel.hidden = true;
   TYPES[k].fields.forEach(d => {
     const fid = "f_" + d.id, w = document.createElement("div"); w.className = "field" + (d.wide ? " wide" : "");
@@ -640,9 +865,9 @@ Object.keys(TYPES).forEach(k => {
 });
 
 function syncControls() {
-  ["module", "eyeFrame", "eyeBall", "logoKind", "frame", "ec", "type"].forEach(n => { const i = document.querySelector(`input[name="${n}"][value="${state[n]}"]`); if (i) i.checked = true; });
+  ["module", "eyeFrame", "eyeBall", "logoKind", "frame", "ec"].forEach(n => { const i = document.querySelector(`input[name="${n}"][value="${state[n]}"]`); if (i) i.checked = true; });
   [["fg", "fg"], ["fg2", "fg2"], ["bg", "bg"], ["eye", "eyeColor"]].forEach(([p, k]) => { $(p + "Pick").value = state[k]; $(p + "Hex").value = state[k]; });
-  ["gradient", "radius", "logoSize", "caption", "quiet", "filename", "pngSize"].forEach(k => { $(k).value = state[k]; });
+  ["type", "gradient", "radius", "logoSize", "caption", "quiet", "filename", "pngSize"].forEach(k => { $(k).value = state[k]; });
   ["eyeCustom", "transparent"].forEach(k => { $(k).checked = state[k]; });
   Object.keys(TYPES).forEach(k => { $("panel_" + k).hidden = k !== state.type; });
 }
@@ -652,11 +877,10 @@ document.addEventListener("input", e => {
   const t = e.target;
   if (t.type === "radio") {
     state[t.name] = t.value;
-    if (t.name === "type") syncControls();
     if (t.name === "logoKind" && t.value !== "none") {
       if (state.ec !== "H") { state.ec = "H"; syncControls(); }
     }
-  } else if (t.dataset.k) state[t.dataset.k] = t.type === "checkbox" ? t.checked : t.value;
+  } else if (t.dataset.k) { state[t.dataset.k] = t.type === "checkbox" ? t.checked : t.value; if (t.dataset.k === "type") { FX.armFull(); syncControls(); } }
   else if (t.dataset.content) { const hint = $("f_url_hint"); if (t.id === "f_url" && hint) hint.hidden = true; }
   else {
     const m = /^(fg2|fg|bg|eye)(Pick|Hex)$/.exec(t.id);
@@ -669,28 +893,28 @@ document.addEventListener("input", e => {
   }
   schedule();
 });
-$("reset").addEventListener("click", () => { Object.assign(state, STYLE_DEFAULTS, { logoData: null }); $("logoName").textContent = "PNG, JPG, WebP or SVG. You can also drop a file here."; syncControls(); render(); status("Styling reset."); });
+$("reset").addEventListener("click", () => { Object.assign(state, STYLE_DEFAULTS, { logoData: null }); $("logoName").textContent = "PNG, JPG, WebP or SVG"; FX.armFull(); syncControls(); render(); status("Styling reset."); });
 
 /* Presets */
 const PRESETS = [
-  { name: "Plain ink", module: "square", eyeFrame: "square", eyeBall: "square", fg: "#000000", fg2: "#000000", gradient: "none", eyeCustom: false, bg: "#ffffff", frame: "none", radius: 0 },
-  { name: "Harbour", module: "connected", eyeFrame: "rounded", eyeBall: "rounded", fg: "#10394f", fg2: "#0f7a6c", gradient: "diagonal", eyeCustom: false, bg: "#ffffff", frame: "banner", radius: 3 },
-  { name: "Plum", module: "dots", eyeFrame: "circle", eyeBall: "circle", fg: "#4b1d6e", fg2: "#b0266b", gradient: "vertical", eyeCustom: false, bg: "#fff7fb", frame: "text", radius: 6 },
-  { name: "Marigold", module: "soft", eyeFrame: "leaf", eyeBall: "rounded", fg: "#2a1a00", fg2: "#2a1a00", gradient: "none", eyeCustom: true, eyeColor: "#a33b00", bg: "#ffd24a", frame: "banner", radius: 6 },
+  { name: "Classic", module: "square", eyeFrame: "square", eyeBall: "square", fg: "#000000", fg2: "#000000", gradient: "none", eyeCustom: false, bg: "#ffffff", frame: "none", radius: 0 },
+  { name: "Ocean", module: "connected", eyeFrame: "rounded", eyeBall: "rounded", fg: "#10394f", fg2: "#0f7a6c", gradient: "diagonal", eyeCustom: false, bg: "#ffffff", frame: "none", radius: 3 },
+  { name: "Plum", module: "dots", eyeFrame: "circle", eyeBall: "circle", fg: "#4b1d6e", fg2: "#b0266b", gradient: "vertical", eyeCustom: false, bg: "#fff7fb", frame: "none", radius: 6 },
+  { name: "Sun", module: "soft", eyeFrame: "leaf", eyeBall: "rounded", fg: "#2a1a00", fg2: "#2a1a00", gradient: "none", eyeCustom: true, eyeColor: "#a33b00", bg: "#ffd24a", frame: "none", radius: 6 },
   { name: "Fern", module: "leaf", eyeFrame: "leaf", eyeBall: "circle", fg: "#124a2f", fg2: "#2f8a43", gradient: "radial", eyeCustom: false, bg: "#f3fbf2", frame: "none", radius: 3 }
 ];
 function renderPresets() {
   const wrap = $("presets");
   const mini = libOk ? (() => { const q = qrcode(1, "L"); q.addData("QUIET", "Byte"); q.make(); return { n: q.getModuleCount(), isDark: (r, c) => q.isDark(r, c) }; })() : null;
   PRESETS.forEach(p => {
-    const b = document.createElement("button"); b.type = "button"; b.className = "preset";
+    const b = document.createElement("button"); b.type = "button"; b.className = "preset spot";
     const s = Object.assign({}, STYLE_DEFAULTS, p, { frame: "none", quiet: 2, logoKind: "none", radius: 0 });
     if (mini) b.innerHTML = buildSvg(mini, s).svg;
     b.appendChild(document.createTextNode(p.name));
     b.addEventListener("click", () => {
       const { name, ...style } = p; Object.assign(state, style);
       if (!("eyeColor" in style)) state.eyeColor = style.fg;
-      syncControls(); render(); status(name + " applied.");
+      FX.armFull(); syncControls(); render();
     });
     wrap.appendChild(b);
   });
@@ -737,7 +961,7 @@ const baseName = () => (state.filename || "").trim().replace(/[^\w.-]+/g, "-").r
 async function offer(filename, blob) {
   const dl = await downloadsReady;
   if (dl) {
-    try { await dl.save({ filename, data: blob }); status("Saved " + filename + "."); }
+    try { await dl.save({ filename, data: blob }); status("Saved " + filename + "."); FX.burst(); }
     catch (e) {
       const c = e && e.code;
       if (c === "declined") status("Download cancelled.");
@@ -749,6 +973,7 @@ async function offer(filename, blob) {
   const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = filename;
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+  FX.burst();
   status("Your browser should start the download. If nothing happens, use Copy SVG instead.");
 }
 $("savePng").addEventListener("click", async () => {
